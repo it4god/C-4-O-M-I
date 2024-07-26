@@ -1,0 +1,93 @@
+ category = []
+        for (let i = 0; i < data.length; i++) {
+            if (!category.includes(data[i].cat))
+                category.push(data[i].cat)
+        }
+
+        for (let i = 0; i < category.length; i++) {
+            let videodata = []
+            for (let j = 0; j < data.length; j++) {
+                if (data[j].cat == category[i]) {
+                    videodata.push(data[j])
+                }
+            }
+            this.myvideo.push(
+                <ScrollView horizontal={true} style={{ flex: 0.75, paddingLeft: 5, paddingRight: 5 }}>
+                    {videodata}
+                </ScrollView>
+            )
+
+            this.myvideo.push(
+                <TouchableOpacity key={data[i].key} onPress={() => {
+                    this.props.navigation.navigate("Video", {
+                        title: data[i].title,
+                        id: data[i].id,
+                        yt_id: data[i].yt_id,
+                        video_path: data[i].video_path,
+                        type: data[i].type
+                    })
+                }} >
+                    {data[i].thumbnail != "" && (
+                        <Image style={styles.box1}
+                            source={{ uri: data[i].thumbnail }}
+                        />
+                    )}
+                    {data[i].thumbnail == "" && (
+                        <Image style={styles.box1}
+                            source={require('../assets/video.jpg')}
+                        />
+                    )}
+                    {data[i].title.length > 25 && (
+                        <Text style={{ paddingLeft: 5 }}>
+                            {data[i].title.substring(0, 25) + "..."}
+                        </Text>
+                    )}
+                    {data[i].title.length <= 25 && (
+                        <Text style={{ paddingLeft: 5 }}>
+                            {data[i].title.substring(0, 25)}
+                        </Text>
+                    )}
+                </TouchableOpacity>)
+
+
+
+                      for (let i = 0; i < data.length; i++) {
+            this.myvideo.push(
+                <TouchableOpacity key={data[i].key} onPress={() => {
+                    this.props.navigation.navigate("Video", {
+                        title: data[i].title,
+                        id: data[i].id,
+                        yt_id: data[i].yt_id,
+                        video_path: data[i].video_path,
+                        type: data[i].type
+                    })
+                }} >
+                    {data[i].thumbnail != "" && (
+                        <Image style={styles.box1}
+                            source={{ uri: data[i].thumbnail }}
+                        />
+                    )}
+                    {data[i].thumbnail == "" && (
+                        <Image style={styles.box1}
+                            source={require('../assets/video.jpg')}
+                        />
+                    )}
+                    {data[i].title.length > 25 && (
+                        <Text style={{ paddingLeft: 5 }}>
+                            {data[i].title.substring(0, 25) + "..."}
+                        </Text>
+                    )}
+                    {data[i].title.length <= 25 && (
+                        <Text style={{ paddingLeft: 5 }}>
+                            {data[i].title.substring(0, 25)}
+                        </Text>
+                    )}
+                </TouchableOpacity>)
+        }
+        this.myvideo.push(
+            <TouchableOpacity key={"More-Video"} onPress={() => {
+                this.setState({ page: 2 })
+            }} >
+                <View style={styles.boxmore}></View>
+            </TouchableOpacity>
+        )
