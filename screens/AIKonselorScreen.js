@@ -23,7 +23,7 @@ const user = {
   name: 'User',
   avatar: 'https://limpingen.org/jeff.png',
 };
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 class AIKonselorScreen extends React.Component {
 
   constructor(props) {
@@ -43,7 +43,7 @@ class AIKonselorScreen extends React.Component {
       sound: false,
     }
   }
-  componentDidMount() {
+  async componentDidMount() {
     let url = ""
     fetch(url, {
       method: 'GET',
@@ -230,11 +230,11 @@ class AIKonselorScreen extends React.Component {
     try {
       const openaiEndpoint = 'https://api.openai.com/v1/chat/completions'
       const userMessage = { role: 'user', content: message };
-      const systemMessage = { role: 'system', content: 'Kamu adalah AI Konselor. Segala respon dan pengetahuanmu harus didasarkan pada pengetahuan kesehatan mental dan psikiatri. Gunakan bahasa yang ramah dan ilmiah' };
+      const systemMessage = { role: 'system', content: 'Kamu adalah AI Konselor. Segala respon dan pengetahuanmu harus didasarkan pada pengetahuan kesehatan mental dan dunia psikiatri. Gunakan bahasa yang ramah dan ilmiah' };
       const data = {
-        max_tokens: 1000,
+        max_tokens: 1500,
         temperature: 0.7,
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [systemMessage, ...this.state.userMessages, userMessage],
       };
       const headers = {
@@ -342,7 +342,7 @@ class AIKonselorScreen extends React.Component {
           subtitle='Mental Health AI ChatBot'
           accessoryLeft={(props) => (
             <React.Fragment>
-              <TouchableOpacity onPress={() => {
+              <TouchableOpacity style={{marginTop:10}} onPress={() => {
                 this.props.navigation.pop()
               }}>
                 <Icon
@@ -352,7 +352,6 @@ class AIKonselorScreen extends React.Component {
                 />
               </TouchableOpacity>
               <Avatar
-                size="giant"
                 source={require('../assets/chat-bot.png')}
               />
             </React.Fragment>
@@ -368,7 +367,7 @@ class AIKonselorScreen extends React.Component {
               <TopNavigationAction icon={<Icon
                 style={styles.icon}
                 fill='#8F9BB3'
-                name={'calendar-outline'}
+                name={'archive-outline'}
               />} onPress={() => { this.props.navigation.navigate("History") }} />
             </>
           )}
@@ -447,8 +446,8 @@ class AIKonselorScreen extends React.Component {
 
   },
   icon: {
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
   },
   content: {
     flex: 5,

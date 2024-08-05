@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, TouchableWithoutFeedback } from "react-native";
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, Linking, Alert, TouchableWithoutFeedback } from "react-native";
 import {
     Icon,
     IconElement,
@@ -15,33 +15,34 @@ import {
     Text,
     Input,
     Modal, Card, Button
-
 } from '@ui-kitten/components';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class VideosScreen extends React.Component {
+export default class PDFsScreen extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            video: [],
-            video2: [],
+            pdf: [],
+            pdf2: [],
             page: 1,
             search: false,
             searchvalue: '',
             menuvisible: false
         }
-        this.myvideo = []
-        this.myvideodetail = []
-        this.myvideo2 = []
+        this.mypdf = []
+        this.mypdfdetail = []
+        this.mypdf2 = []
     }
 
     async componentDidMount() {
+        let api_url = "http://limpingen.org/api_url.php"
+
         try {
             this.API_URL = await AsyncStorage.getItem('API_URL');
             if (this.API_URL !== null) {
-                this.DoGenerateVideo("")
+          
             }
             else {
                 await AsyncStorage.setItem('API_URL', this.api_url);
@@ -49,21 +50,19 @@ export default class VideosScreen extends React.Component {
         } catch (e) {
             // error reading value
         }
-        
+        this.DoGeneratePDF("")
+
     }
 
-    async DoGenerateVideo(searchvalue) {
-
-
-        this.myvideo = []
-        this.myvideodetail = []
-        this.myvideo2 = []
+    async DoGeneratePDF(searchvalue) {
+        this.mypdf = []
+        this.mypdfdetail = []
+        this.mypdf2 = []
         let url = "";
         if (searchvalue == "")
-            url = this.API_URL+ "c4omi/api-v2/videos.php"
+            url = this.API_URL+ "c4omi/api-v2/pdfs.php"
         else
-            url = this.API_URL+ "c4omi/api-v2/videos.php?keyword=" + searchvalue
-    
+            url = this.API_URL+ "c4omi/api-v2/pdfs.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -84,36 +83,41 @@ export default class VideosScreen extends React.Component {
 
         }
         for (let i = 0; i < category.length; i++) {
-            this.myvideodetail = []
+            this.mypdfdetail = []
             n = 0
             for (let j = 0; j < this.data.length; j++) {
 
                 if (this.data[j].category_id == category[i]) {
                     n = n + 1
-                    this.myvideodetail.push(
+                    this.mypdfdetail.push(
                         <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString() + category[i]} onPress={() => {
-                            this.props.navigation.navigate("Video", {
-                                title: this.data[j].title,
-                                id: this.data[j].id,
-                                youtube_id: this.data[j].youtube_id,
-                                category_id: this.data[j].category_id
+                            this.props.navigation.navigate("PDF", {
+
+                                url: this.data[j].url,
+
                             })
 
                         }} >
-                            <View style={{ flex: 1, width: 210, height: 10 / 16 * 300 }}>
-                                <Image style={styles.box1}
-                                    source={require('../assets/C4OMI-Logo.png')}
-                                />
-
+                            <View style={{ flex: 1, width: 210, height: 11 / 7 * 210 }}>
+                                {this.data[i].thumbnail != "" && (
+                                    <Image style={styles.box1}
+                                        source={{ uri: this.API_URL+ "c4omi-web-admin-v2/assets/uploads/files/thumbnail/" + this.data[i].thumbnail }}
+                                    />
+                                )}
+                                {this.data[i].thumbnail == "" && (
+                                    <Image style={styles.box1}
+                                        source={require('../assets/C4OMI-Logo.png')}
+                                    />
+                                )}
                                 {this.data[j].title.length > 25 && (
                                     <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
-                                        <Text category="p2" style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                        <Text style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
                                             {this.data[j].title}
                                         </Text>
                                     </View>
                                 )}
                                 {this.data[j].title.length <= 25 && (
-                                    <Text category="p2" style={{ paddingHorizontal: 8 }}>
+                                    <Text style={{ paddingHorizontal: 8 }}>
                                         {this.data[j].title.substring(0, 25)}
                                     </Text>
                                 )}
@@ -122,51 +126,54 @@ export default class VideosScreen extends React.Component {
                     )
 
                 }
-                if (n > 20) break;
+                if (n > 10) break;
 
             }
 
 
-            this.shuffle(this.myvideodetail)
-            this.myvideodetail.push(
-                <TouchableOpacity key={"More-Video" + i.toString()} onPress={() => {
-                    this.myvideo2 = []
+            this.shuffle(this.mypdfdetail)
+            this.mypdfdetail.push(
+                <TouchableOpacity key={"More-pdf" + i.toString()} onPress={() => {
+                    this.mypdf2 = []
                     for (let j = 0; j < this.data.length; j++) {
                         if (this.data[j].category_id == category[i])
-                            this.myvideo2.push(
+                            this.mypdf2.push(
                                 <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={this.data[j].id} onPress={() => {
-                                    this.props.navigation.navigate("Video", {
-                                        title: this.data[j].title,
-                                        id: this.data[j].id,
-                                        youtube_id: this.data[j].youtube_id,
-                                        category_id: this.data[j].category_id
+                                    this.props.navigation.navigate("PDF", {
+
+                                        url: this.data[j].url,
+
                                     })
                                 }} >
-
-                                    <Image style={styles.box1}
-                                        source={require('../assets/C4OMI-Logo.png')}
-                                    />
+                                    {this.data[j].thumbnail != "" && (
+                                        <Image style={styles.box1}
+                                            source={{ uri: this.API_URL+ "c4omi/api-v2//c4omi-web-admin/assets/uploads/files/thumbnail/" + this.data[i].thumbnail }}
+                                        />
+                                    )}
+                                    {this.data[j].thumbnail == "" && (
+                                        <Image style={styles.box1}
+                                            source={require('../assets/C4OMI-Logo.png')}
+                                        />
+                                    )}
                                     <View style={{ width: 300, flexShrink: 1 }}>
                                         {this.data[j].title.length > 25 && (
-                                            <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                            <Text category="s1" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
                                                 {this.data[j].title}
                                             </Text>
                                         )}
                                         {this.data[j].title.length <= 25 && (
-                                            <Text category="p2" style={{ paddingHorizontal: 8 }}>
+                                            <Text category="h6" style={{ paddingHorizontal: 8 }}>
                                                 {this.data[j].title.substring(0, 25)}
                                             </Text>
                                         )}
-                                        <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
-                                        <Text style={{ paddingHorizontal: 8,fontSize: 12, fontStyle:"italic" }}>
-                                                {this.data[j].category_name}
-                                            </Text>
+                                        <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12 }}>C4OMI Indonesia</Text>
+                                        <Text category="s2" style={{ paddingHorizontal: 8, fontSize: 13, color: "gray" }}>{this.data[j].author}</Text>
                                     </View>
 
                                 </TouchableOpacity>)
                     }
 
-                    this.setState({ video2: this.myvideo2, page: 2, category: category[i], category_name: category_name[i] })
+                    this.setState({ pdf2: this.mypdf2, page: 2, category: category[i], category_name: category_name[i] })
                 }} >
                     <View style={styles.boxmore}>
                         <Image style={styles.boxmore}
@@ -175,21 +182,20 @@ export default class VideosScreen extends React.Component {
                     </View>
                 </TouchableOpacity>
             )
-            this.myvideo.push(
+            this.mypdf.push(
                 <View key={i.toString() + "cat"}>
                     <Text category="h6" style={{ marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
-                        {this.myvideodetail}
+                        {this.mypdfdetail}
                     </ScrollView>
                 </View>
             )
-            this.shuffle(this.myvideo)
+            this.shuffle(this.mypdf)
 
         }
-        this.setState({ video: this.myvideo })
+        this.setState({ pdf: this.mypdf })
 
     }
-
     shuffle(array) {
         let currentIndex = array.length;
 
@@ -207,21 +213,20 @@ export default class VideosScreen extends React.Component {
     }
 
     DoSearch() {
-        this.DoGenerateVideo(this.state.searchvalue)
+        this.DoGeneratePDF(this.state.searchvalue)
     }
 
     render() {
         const toggleSearch = () => {
             this.DoSearch()
         };
-
         return (
             <Layout style={{ flex: 1 }}>
                 {this.state.page == 1 && (
                     <TopNavigation
                         alignment='center'
                         title='C4OMI Indonesia'
-                        subtitle='Video-video'
+                        subtitle='E-Books'
                         accessoryLeft={(props) => (
                             <React.Fragment>
                                 <TouchableOpacity onPress={() => {
@@ -253,7 +258,7 @@ export default class VideosScreen extends React.Component {
                 {this.state.page == 2 && (
                     <TopNavigation
                         alignment='center'
-                        title='Videos'
+                        title='PDFs'
                         subtitle={this.state.category_name}
                         accessoryLeft={(props) => (
                             <React.Fragment>
@@ -269,7 +274,17 @@ export default class VideosScreen extends React.Component {
                             </React.Fragment>
 
                         )}
-
+                        accessoryRight={(props) => (
+                            <React.Fragment>
+                                <TouchableOpacity onPress={() => { Alert.alert("Under Construction") }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='search-outline'
+                                    />
+                                </TouchableOpacity>
+                            </React.Fragment>
+                        )}
                     />)}
 
                 <Divider />
@@ -291,21 +306,21 @@ export default class VideosScreen extends React.Component {
                 )}
                 {this.state.page == 1 && (
                     <ScrollView showsVerticalScrollIndicator={false} style={{ margin: 5, flex: 1 }}>
-                        {this.state.video}
+                        {this.state.pdf}
                     </ScrollView>
                 )}
                 {this.state.page == 2 && (
 
                     <ScrollView style={{ flex: 1 }}>
                         <View style={{ width: 2, height: 20 }}></View>
-                        {this.state.video2}
+                        {this.state.pdf2}
                         <View style={{ width: 2, height: 100 }}>
 
                         </View>
                     </ScrollView>
 
                 )}
-                <Divider/>
+                <Divider />
                 <BottomNavigation
                     appearance='noIndicator'
                     accessibilityIgnoresInvertColors={true}
@@ -329,7 +344,7 @@ export default class VideosScreen extends React.Component {
                             this.props.navigation.navigate("Event")
                         }
                         if (index == 4) {
-                            this.props.navigation.replace("Home", {menuvisible : true})
+                            this.props.navigation.replace("Home", { menuvisible: true })
                             this.setState({ menuvisible: true })
                         }
                         if (index == 5) {
@@ -368,7 +383,7 @@ export default class VideosScreen extends React.Component {
                             Situs Luar Negeri
                         </Button>
                         <View style={{ paddingHorizontal: 50 }}>
-                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }) ;this.props.navigation.popToTop(); }}>
+                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); }}>
                                 Tutup
                             </Button>
                         </View>
@@ -386,7 +401,7 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     box1: {
-        marginRight: 5, width: 200, height: 9 / 16 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
+        marginRight: 5, width: 200, height: 10 / 7 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
     },
     boxmore: {
         marginRight: 5, width: 100, height: 100, borderRadius: 5

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Linking } from "react-native";
+import { View, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Linking, Share } from "react-native";
 import {
     Icon,
     IconElement,
@@ -12,13 +12,15 @@ import {
     BottomNavigationTab,
     Avatar,
     Divider,
-    Text
-
+    Text,
+    Modal,
+    Card,
+    Button
 } from '@ui-kitten/components';
 //import Sound from 'react-native-sound';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -28,6 +30,29 @@ export default class HomeScreen extends React.Component {
         }
     }
     async componentDidMount() {
+        let api_url = "http://limpingen.org/api_url.php"
+        await fetch(api_url, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then((responseJson) => {
+                this.api_url = responseJson[0].apikey
+                console.log(this.api_url)
+            });
+        try {
+            this.API_URL = await AsyncStorage.getItem('API_URL');
+            if (this.API_URL !== null) {
+                if (this.API_URL != this.api_url) {
+                    await AsyncStorage.setItem('API_URL', this.api_url);
+                    this.API_URL = this.api_url;
+                }
+            }
+            else {
+                await AsyncStorage.setItem('API_URL', this.api_url);
+            }
+        } catch (e) {
+            // error reading value
+        }
         Linking.getInitialURL().then((url) => {
             this.url = url;
             if (this.state.urlchange == false)
@@ -41,20 +66,74 @@ export default class HomeScreen extends React.Component {
         })
         Linking.addEventListener('url', event => {
             this.DeepLinkingNavigate(event.url)
-         })
-    }
+        })
+        this.menuvisible = this.props.route.params?.menuvisible;
+        this.setState({ menuvisible: this.menuvisible })
 
-    DeepLinkingNavigate(url)
-    {
-        if(url!=null)
-        if (url.includes("c4omi")) {
-            this.uri = url.replace("c4omi://", "");
-            console.log(this.uri)
-            this.props.navigation.navigate("Video", {
-                youtube_id: this.uri,
-            })
+
+    }
+    reverseString(str) {
+        return str.split("").reverse().join("");
+    }
+    async DeepLinkingNavigate(url) {
+        if (url != null)
+            if (url.includes("c4omi://video_uri=")) {
+                this.uri = url.replace("c4omi://video_uri=", "");
+                this.uri = this.uri.replace("C4OMI-", "")
+                this.uri = this.uri.replace("#Video", "")
+                this.uri = this.reverseString(this.uri)
+                this.props.navigation.navigate("Video", {
+                    youtube_id: this.uri.trim(),
+                })
+            }
+            else if (url.includes("c4omi://article_title=")) {
+                this.uri = url.replace("c4omi://article_title=", "");
+                url = this.API_URL+ "c4omi/api-v2/article.php?article_title=" + this.uri
+                await fetch(url, {
+                    method: 'GET',
+                })
+                    .then(response => response.json())
+                    .then((responseJson) => {
+                        this.data = responseJson
+                        for (let i = 0; i < this.data.length; i++) {
+                            if (i == 0)
+                                this.props.navigation.navigate("Article", {
+                                    title: this.data[i].title,
+                                    id: this.data[i].id,
+                                    url: this.data[i].url,
+                                })
+                        }
+                    });
+
+
+
+
+            }
+    }
+    async Share() {
+
+        this.message = 'Aplikasi Mobile C4OMI\n\nSilahkan Download di https://play.google.com/store/apps/details?id=com.it4god.c4omi'
+
+        try {
+            const result = await Share.share({
+                message: this.message
+
+            });
+
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
         }
     }
+
     render() {
         return (
             <Layout style={{ flex: 1 }}>
@@ -64,31 +143,44 @@ export default class HomeScreen extends React.Component {
                     subtitle='Care for Overcomers on Mental Ilness'
                     accessoryLeft={(props) => (
                         <React.Fragment>
-                            <View style={{}}></View>
-                            <Avatar
-                                size="giant"
-                                source={require('../assets/c4omi.jpg')}
-                            />
+                            <TouchableOpacity onPress={() => { this.props.navigation.navigate("DrawerMenu") }}>
+                                <Icon
+                                    style={styles.icon}
+                                    fill='#8F9BB3'
+                                    name='menu-2-outline'
+                                />
+                            </TouchableOpacity>
                         </React.Fragment>
 
                     )}
                     accessoryRight={(props) => (
                         <React.Fragment>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => { this.Share() }}>
                                 <Icon
                                     style={styles.icon}
                                     fill='#8F9BB3'
-                                    name='settings-2-outline'
+                                    name='share-outline'
                                 />
                             </TouchableOpacity>
                         </React.Fragment>
                     )}
                 />
                 <Divider />
-                <ScrollView
+                <ScrollView showsVerticalScrollIndicator={false}
                     style={{ flex: 1 }}
                 >
                     <Layout style={{ padding: 15 }}>
+                        <View style={{ justifyContent: "center", alignItems: "center" }}>
+                            <Image
+                                style={{
+                                    borderRadius: 5,
+                                    width: 120,
+                                    height: 120,
+                                    alignItems: "center",
+                                }}
+                                source={require("../assets/c4omi.jpg")}
+                            />
+                        </View>
                         <Text style={{ textAlign: "center", fontWeight: "bold" }}>
                             Apa itu C4OMI ?
                         </Text>
@@ -99,88 +191,75 @@ export default class HomeScreen extends React.Component {
                             • C4OMI memberikan penyuluhan, pendampingan, pembelaan (advocacy) agar mereka belajar membangun kehidupan yang sehat, seimbang, berkualitas, dan dihormati, tanpa diskriminasi dan stigma.
                             {"\n"}
                             • C4OMI membangun jejaring narasumber dan informasi bantuan konsultasi, perawatan, pengobatan yang bisa diakses dan digunakan bagi mereka yang membutuhkan.
-                            {"\n\n"}
-                            C4OMI.Indonesia@gmail.com
                             {"\n"}
-                            0896-7897-8655
                         </Text>
                         <Image style={{ marginTop: 20, width: width - 40, height: (width - 40) / 5 }}
                             source={require('../assets/logo.png')}
                         />
-                        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
-                            Visi
-                        </Text>
-                        <Text style={{ textAlign: "center" }}>
-                            VISI kami
-                        </Text>
-                        <Text style={{ textAlign: "justify" }}>
-                            C4OMI membayangkan sebuah dunia di mana orang-orang yang terkena Gangguan Kesehatan Mental, dapat hidup sehat dan menikmati kehidupan yang didukung oleh komunitas yang peduli.
-                        </Text>
-                        <Text style={{ textAlign: "center", fontWeight: "bold", paddingTop: 30 }}>
-                            Misi
-                        </Text>
-                        <Text style={{ textAlign: "center" }}>
-                            MISI kami
-                        </Text>
-                        <Text style={{ textAlign: "justify" }}>
-                            C4OMI memberikan edukasi, dukungan, advokasi, dan inisiatif untuk mencerahkan masyarakat agar anggota keluarga yang terkena Gangguan Kesehatan Mental dan pihak keluarganya dapat membangun kehidupan yang lebih baik.
-                        </Text>
-                        <Text style={{ textAlign: "center", fontWeight: "bold", paddingTop: 30 }}>
-                            Nilai
-                        </Text>
-                        <Text style={{ textAlign: "center" }}>
-                            NILAI kami (H.A.T.I)
-                        </Text>
-                        <Text style={{ textAlign: "justify" }}>
-                            • HARAPAN: Kami percaya pada kemungkinan pemulihan, kesehatan, dan potensi dalam diri kita semua.
-                            {"\n"}
-                            • ASIH – ASAH – ASUH: Kami mempraktikkan rasa hormat, kebaikan, dan empati sambil memberi penyuluhan, pendampingan, pencerahan dan advokasi.
-                            {"\n"}
-                            • TUMBUH KEMBANGKAN: Kami melakukan pemberdayaan yang menumbuh-kembangkan kepercayaan diri, kemandirian, dan semangat saling membantu dalam misi kami.
-                            {"\n"}
-                            • INKLUSI: Kami merangkul beragam latar belakang budaya, etnis, dan perspektif kepercayaan.
-                            {"\n"}
-                            {"\n"}
-
-                            UPAYA kami
-                            {"\n"}
-                            • Kami mendidik. Ditawarkan kepada aneka komunitas di seluruh Indonesia atau komunitas berbahasa Indonesia dimana saja, perihal program pendidikan C4OMI secara ‘online‘ (dimana memungkinkan, secara ‘onsite‘) yang memastikan sebanyak mungkin keluarga, individu, dan pendidik mendapatkan dukungan dan informasi yang mereka butuhkan.
-                            {"\n"}
-                            • Kami mendukung. Di mana saja komunitas berbahasa Indonesia berada, agar upaya kolaborasi demi menolong terselenggaranya kelompok pendukung (Support group, peer – connection, women connection), untuk mereka yang menderita Gangguan Kesehatan mental, maupun pihak keluarganya (care giver), sehingga tidak ada yang merasa sendirian dalam mengalami pergumulan kesehatan mental mereka. (Sedang mulai dirintis)
-                            {"\n"}
-                            • Kami mendengar. C4OMI HelpLine mengupayakan layanan bagi yang membutuhkan informasi dan koneksi kolaboratif terkait konseling, perawatan atas anggota keluarga yang mengalami Gangguan Kesehatan Mental dan/atau pihak kerabatnya. (Masih dalam persiapan)
-                            {"\n"}
-                            • Kami menyuarakan. Acara dan kegiatan yang membangkitkan kesadaran publik, membangun atmosfir yang melawan stigma dan mendorong pemahaman. Bekerja sama dengan wartawan untuk memastikan masyarakat kita memahami betapa pentingnya kesehatan mental. (Akan diupayakan sejauh memungkinkan)
-                            {"\n"}
-                            C4OMI bergandengan tangan dengan pihak-pihak yang memiliki visi dan misi yang sejalan dalam mendukung pekerjaan penting ini dan untuk menularkan dampak dari perjuangan bersama ini.
-
-                        </Text>
                     </Layout>
                 </ScrollView >
+                <Divider />
                 <BottomNavigation
-
+                    appearance='noIndicator'
                     accessibilityIgnoresInvertColors={true}
                     selectedIndex={this.state.selectedIndex}
                     onSelect={async (index) => {
                         this.setState({ selectedIndex: index })
-                        if (index == 1) {
+                        if (index == 0) {
                             this.props.navigation.navigate("Videos")
                         }
-                        if (index == 2) {
+                        if (index == 1) {
                             this.props.navigation.navigate("Articles")
                         }
+                        if (index == 2) {
+                            this.props.navigation.navigate("PDFs")
+                        }
+                        if (index == 3) {
+                            this.props.navigation.navigate("Event")
+                        }
+                        if (index == 4) {
+                            this.setState({ menuvisible: true })
+                        }
                         if (index == 5) {
+                            this.props.navigation.navigate("ChatClient")
+                        }
+                        if (index == 6) {
                             this.props.navigation.navigate("AIKonselor")
                         }
                     }}>
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'home-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'film-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'book-open-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'book-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon {...props} name={'message-square-outline'} />} />
-        
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-open-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+
                 </BottomNavigation>
+                <Modal visible={this.state.menuvisible}>
+                    <Card disabled={true}>
+                        <Text style={{ textAlign: "center" }}>
+                            Link-link
+                        </Text>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: false }) }}>
+                            Info, Edukasi dan Layanan Konseling - Rehabilitasi
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.navigate("Links", { category_id: 2, luar_negeri: false }) }}>
+                            Platform Komunitas
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.navigate("Links", { category_id: 3, luar_negeri: false }) }}>
+                            Platform Konseling Basis Apps
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: true }) }}>
+                            Situs Luar Negeri
+                        </Button>
+                        <View style={{ paddingHorizontal: 50 }}>
+                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }) }}>
+                                Tutup
+                            </Button>
+                        </View>
+                    </Card>
+                </Modal>
 
 
             </Layout >
@@ -196,8 +275,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     icon: {
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
     },
     content: {
         flex: 5,

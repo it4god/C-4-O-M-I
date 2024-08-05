@@ -23,6 +23,7 @@ const user = {
     avatar: 'https://limpingen.org/jeff.png',
 };
 import SQLite from 'react-native-sqlite-2'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 class HistoryScreen extends React.Component {
 
     constructor(props) {

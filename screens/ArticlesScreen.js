@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image } from "react-native";
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Image, Alert, TouchableWithoutFeedback } from "react-native";
 import {
     Icon,
     IconElement,
@@ -12,11 +12,14 @@ import {
     BottomNavigationTab,
     Avatar,
     Divider,
-    Text
+    Text,
+    Input,
+    Modal,Card,Button
 
 } from '@ui-kitten/components';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class ArticlesScreen extends React.Component {
 
     constructor(props) {
@@ -25,6 +28,9 @@ export default class ArticlesScreen extends React.Component {
             article: [],
             article2: [],
             page: 1,
+            search: false,
+            searchvalue: '',
+            menuvisible : false
         }
         this.myarticle = []
         this.myarticledetail = []
@@ -32,8 +38,28 @@ export default class ArticlesScreen extends React.Component {
     }
 
     async componentDidMount() {
+        try {
+            this.API_URL = await AsyncStorage.getItem('API_URL');
+            if (this.API_URL !== null) {
+          
+            }
+            else {
+                await AsyncStorage.setItem('API_URL', this.api_url);
+            }
+        } catch (e) {
+            // error reading value
+        }
+        this.DoGenerateArticle("")
+    }
 
-        let url = "https://admin.c4omi.org/api/articles.php"
+    async DoGenerateArticle(searchvalue) {
+        this.myarticle = []
+        this.myarticledetail = []
+        this.myarticle2 = []
+        if (searchvalue == "")
+            url = this.API_URL+ "c4omi/api-v2/articles.php"
+        else
+            url = this.API_URL+ "c4omi/api-v2/articles.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -61,29 +87,30 @@ export default class ArticlesScreen extends React.Component {
                 if (this.data[j].category_id == category[i]) {
                     n = n + 1
                     this.myarticledetail.push(
-                        <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString() + category[i]} onPress={() => {
+                        <TouchableOpacity style={{ flexWrap: "nowrap" }} key={Math.random()} onPress={() => {
                             this.props.navigation.navigate("Article", {
                                 title: this.data[j].title,
                                 id: this.data[j].id,
+                                category_id :this.data[j].category_id,
                                 url: this.data[j].url,
 
                             })
 
                         }} >
-                            <View style={{ flex: 1, width: 210, height: 11 / 16 * 300 }}>
-                                    <Image style={styles.box1}
-                                        source={require('../assets/C4OMI-Logo.png')}
-                                    />
-                                
+                            <View style={{ flex: 1, width: 210, height: 9.4 / 16 * 300 }}>
+                                <Image style={styles.box1}
+                                    source={require('../assets/C4OMI-Logo.png')}
+                                />
+
                                 {this.data[j].title.length > 25 && (
                                     <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
-                                        <Text style={{ flex: 1, flexWrap: "wrap", paddingLeft: 8 }}>
+                                        <Text category="p2" style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
                                             {this.data[j].title}
                                         </Text>
                                     </View>
                                 )}
                                 {this.data[j].title.length <= 25 && (
-                                    <Text style={{ paddingLeft: 8 }}>
+                                    <Text category="p2" style={{ paddingHorizontal: 8 }}>
                                         {this.data[j].title.substring(0, 25)}
                                     </Text>
                                 )}
@@ -99,35 +126,40 @@ export default class ArticlesScreen extends React.Component {
 
             this.shuffle(this.myarticledetail)
             this.myarticledetail.push(
-                <TouchableOpacity key={"More-article" + i.toString()} onPress={() => {
+                <TouchableOpacity key={"More-article" + Math.random()} onPress={() => {
                     this.myarticle2 = []
                     for (let j = 0; j < this.data.length; j++) {
                         if (this.data[j].category_id == category[i])
                             this.myarticle2.push(
-                                <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={this.data[j].id} onPress={() => {
+                                <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={Math.random()} onPress={() => {
                                     this.props.navigation.navigate("Article", {
                                         title: this.data[j].title,
                                         id: this.data[j].id,
+                                        category_id :this.data[j].category_id,
                                         url: this.data[j].url,
+        
 
                                     })
                                 }} >
-                                        <Image style={styles.box1}
-                                            source={require('../assets/C4OMI-Logo.png')}
-                                        />
-                                    
+                                    <Image style={styles.box1}
+                                        source={require('../assets/C4OMI-Logo.png')}
+                                    />
+
                                     <View style={{ width: 300, flexShrink: 1 }}>
                                         {this.data[j].title.length > 25 && (
-                                            <Text style={{ flexWrap: "wrap", paddingLeft: 8 }}>
+                                            <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
                                                 {this.data[j].title}
                                             </Text>
                                         )}
                                         {this.data[j].title.length <= 25 && (
-                                            <Text style={{ paddingLeft: 8 }}>
+                                            <Text category="p2" style={{ paddingHorizontal: 8 }}>
                                                 {this.data[j].title.substring(0, 25)}
                                             </Text>
                                         )}
-                                        <Text style={{ paddingLeft: 8, fontSize: 12, fontWeight: "bold", }}>C4OMI Indonesia</Text>
+                                        <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
+                                        <Text style={{  fontSize: 12,paddingHorizontal: 8, fontStyle:"italic" }}>
+                                                {this.data[j].category_name}
+                                            </Text>
                                     </View>
 
                                 </TouchableOpacity>)
@@ -143,7 +175,7 @@ export default class ArticlesScreen extends React.Component {
                 </TouchableOpacity>
             )
             this.myarticle.push(
-                <View key={i.toString() + "cat"}>
+                <View key={Math.random() + "cat"}>
                     <Text category="h6" style={{ marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
                         {this.myarticledetail}
@@ -158,6 +190,7 @@ export default class ArticlesScreen extends React.Component {
 
 
     }
+
     shuffle(array) {
         let currentIndex = array.length;
 
@@ -173,15 +206,21 @@ export default class ArticlesScreen extends React.Component {
                 array[randomIndex], array[currentIndex]];
         }
     }
+    DoSearch(){
+        this.DoGenerateArticle(this.state.searchvalue)
+    }
 
     render() {
+        const toggleSearch = () => {
+            this.DoSearch()
+          };
         return (
             <Layout style={{ flex: 1 }}>
                 {this.state.page == 1 && (
                     <TopNavigation
                         alignment='center'
                         title='C4OMI Indonesia'
-                        subtitle='Articles'
+                        subtitle='Artikel-artikel'
                         accessoryLeft={(props) => (
                             <React.Fragment>
                                 <TouchableOpacity onPress={() => {
@@ -196,12 +235,23 @@ export default class ArticlesScreen extends React.Component {
                             </React.Fragment>
 
                         )}
+                        accessoryRight={(props) => (
+                            <React.Fragment>
+                                <TouchableOpacity onPress={() => { this.setState({ search: true }) }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='search-outline'
+                                    />
+                                </TouchableOpacity>
+                            </React.Fragment>
+                        )}
 
                     />)}
                 {this.state.page == 2 && (
                     <TopNavigation
                         alignment='center'
-                        title='Articles'
+                        title='Artikel-artikel'
                         subtitle={this.state.category_name}
                         accessoryLeft={(props) => (
                             <React.Fragment>
@@ -221,6 +271,22 @@ export default class ArticlesScreen extends React.Component {
                     />)}
 
                 <Divider />
+                {this.state.search == true && (
+                    <Layout style={{ padding: 10 }}>
+                        <Input
+                            value={this.state.searchvalue}
+                            placeholder={'Kata Kunci'}
+                            onSubmitEditing={toggleSearch}
+                            accessoryRight={(props) => (<TouchableWithoutFeedback onPress={toggleSearch}>
+                                <Icon {...props} name={'search-outline'} />
+                            </TouchableWithoutFeedback>)}
+                            onChangeText={nextValue => {
+                                if (nextValue != "") this.setState({ searchvalue: nextValue })
+                                else this.setState({ searchvalue: "", search: false })
+                            }}
+                        />
+                    </Layout>
+                )}
                 {this.state.page == 1 && (
                     <ScrollView showsVerticalScrollIndicator={false} style={{ margin: 5, flex: 1 }}>
                         {this.state.article}
@@ -229,6 +295,7 @@ export default class ArticlesScreen extends React.Component {
                 {this.state.page == 2 && (
 
                     <ScrollView style={{ flex: 1 }}>
+                        <View style={{ width: 2, height: 20 }}></View>
                         {this.state.article2}
                         <View style={{ width: 2, height: 100 }}>
 
@@ -236,6 +303,75 @@ export default class ArticlesScreen extends React.Component {
                     </ScrollView>
 
                 )}
+                                <Divider/>
+                <BottomNavigation
+                    appearance='noIndicator'
+                    accessibilityIgnoresInvertColors={true}
+                    selectedIndex={this.state.selectedIndex}
+                    onSelect={async (index) => {
+                        this.setState({ selectedIndex: index })
+                        if (index == 0) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("Videos")
+                        }
+                        if (index == 1) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("Articles")
+                        }
+                        if (index == 2) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("PDFs")
+                        }
+                        if (index == 3) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("Event")
+                        }
+                        if (index == 4) {
+                            this.props.navigation.replace("Home", {menuvisible : true})
+                            this.setState({ menuvisible: true })
+                        }
+                        if (index == 5) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("ChatClient")
+                        }
+                        if (index == 6) {
+                            this.props.navigation.popToTop()
+                            this.props.navigation.navigate("AIKonselor")
+                        }
+                    }}>
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-open-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+
+                </BottomNavigation>
+                <Modal visible={this.state.menuvisible}>
+                    <Card disabled={true}>
+                        <Text style={{ textAlign: "center" }}>
+                            Link-link
+                        </Text>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: false }) }}>
+                            Info, Edukasi dan Layanan Konseling - Rehabilitasi
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop();this.props.navigation.navigate("Links", { category_id: 2, luar_negeri: false }) }}>
+                            Platform Komunitas
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false });this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 3, luar_negeri: false }) }}>
+                            Platform Konseling Basis Apps
+                        </Button>
+                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop();this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: true }) }}>
+                            Situs Luar Negeri
+                        </Button>
+                        <View style={{ paddingHorizontal: 50 }}>
+                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }) ;this.props.navigation.popToTop(); }}>
+                                Tutup
+                            </Button>
+                        </View>
+                    </Card>
+                </Modal>
             </Layout>
         );
     }
@@ -248,7 +384,7 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     box1: {
-        marginRight: 5, width: 200, height: 9 / 16 * 200, borderRadius: 5, borderWidth: 1, borderColor: "gray"
+        marginRight: 5, width: 200, height: 9 / 16 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
     },
     boxmore: {
         marginRight: 5, width: 100, height: 100, borderRadius: 5
