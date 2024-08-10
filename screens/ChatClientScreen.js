@@ -91,16 +91,13 @@ export default class ChatClientScreen extends React.Component {
             )}
           />
           <Divider />
-          <Layout style={{ flex: 1, padding: 10 }}>
-            <Input
+            <Input style={{padding :10}}
               placeholder='Nama Lengkap'
               value={this.state.fullname}
               onChangeText={fullname => this.setState({ fullname: fullname })}
             />
-          </Layout>
-          {this.state.fullname != "" && (
               <GiftedChat
-                style={{ flex: 1 }}
+                style={{ height: height - 100}}
                 renderSend={this.renderSend}
                 renderInputToolbar={this.renderInputToolbar}
                 alwaysShowSend={true}
@@ -110,8 +107,7 @@ export default class ChatClientScreen extends React.Component {
                 messages={this.state.messages}
                 listViewProps={{ styles: { backgroundColor: "white" } }}
                 onSend={messages => this.onSend(messages)}
-                user={user}
-              />)}
+                user={user}/>
         </Layout>
 
     );

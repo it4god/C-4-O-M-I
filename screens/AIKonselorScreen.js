@@ -44,7 +44,7 @@ class AIKonselorScreen extends React.Component {
     }
   }
   async componentDidMount() {
-    let url = ""
+    let url = "http://limpingen.org/apikey.php"
     fetch(url, {
       method: 'GET',
     })
