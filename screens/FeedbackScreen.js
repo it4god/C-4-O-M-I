@@ -2,15 +2,8 @@ import React, { Component } from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Linking } from "react-native";
 import {
     Icon,
-    IconElement,
     Layout,
-    MenuItem,
-    OverflowMenu,
     TopNavigation,
-    TopNavigationAction,
-    BottomNavigation,
-    BottomNavigationTab,
-    Avatar,
     Divider,
     Text
 
@@ -18,7 +11,6 @@ import {
 //import Sound from 'react-native-sound';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class FeedbackScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -73,9 +65,9 @@ export default class FeedbackScreen extends React.Component {
                         </Text>
                         <Text style={{ textAlign: "justify" }}>
                             {"\n"}
-                            Untuk Feedback bahan bisa menghubungi kontak C4OMI {"\n"}di WA : 0896-7897-8655{"\n"}Email : C4OMI.Indonesia@gmail.com
+                            Untuk Feedback bahan bisa menghubungi kontak C4OMI {"\n"}di WA : <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://wa.me/6289678978655') }}>0896-7897-8655</Text>{"\n"}Email : C4OMI.Indonesia@gmail.com
                             {"\n\n"}
-                            Untuk Feedback Aplikasi Android bisa menghubungi : {"\n"}Jeffrey Lim{"\n"}di WA : 0877-227-277-17{"\n"}Email : limpingen777@gmail.com
+                            Untuk Feedback Aplikasi Android bisa menghubungi : {"\n"}Jeffrey Lim{"\n"}di WA : <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://wa.me/6287722727717') }}>0877-227-277-17</Text>.{"\n"}Email : limpingen777@gmail.com
                             {"\n"}
                         </Text>
 

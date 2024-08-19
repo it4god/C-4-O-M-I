@@ -1,16 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Linking } from "react-native";
 import {
     Icon,
-    IconElement,
     Layout,
-    MenuItem,
-    OverflowMenu,
     TopNavigation,
-    TopNavigationAction,
-    BottomNavigation,
-    BottomNavigationTab,
-    Avatar,
     Divider,
     Text
 

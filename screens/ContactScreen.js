@@ -1,16 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 import { View, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Image, Linking } from "react-native";
 import {
     Icon,
-    IconElement,
     Layout,
-    MenuItem,
-    OverflowMenu,
     TopNavigation,
-    TopNavigationAction,
-    BottomNavigation,
-    BottomNavigationTab,
-    Avatar,
     Divider,
     Text
 
@@ -18,7 +11,6 @@ import {
 //import Sound from 'react-native-sound';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-import AsyncStorage from '@react-native-async-storage/async-storage';
 export default class ContactScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -76,7 +68,7 @@ export default class ContactScreen extends React.Component {
                             {"\n\n"}
                             C4OMI.Indonesia@gmail.com
                             {"\n"}
-                            0896-7897-8655
+                            <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://wa.me/6289678978655') }}>0896-7897-8655</Text>
                         </Text>
          
                         

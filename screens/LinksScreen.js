@@ -63,9 +63,9 @@ export default class LinksScreen extends React.Component {
         this.mylink2 = []
         let url = "";
         if (luar_negeri == true)
-            url = this.API_URL+ "c4omi/api-v2/links.php?luar_negeri=true&category_id=0"
+            url = this.API_URL+ "c4omi/api-v3/links.php?luar_negeri=true&category_id=0"
         else
-            url = this.API_URL+ "c4omi/api-v2/links.php?category_id=" + category_id
+            url = this.API_URL+ "c4omi/api-v3/links.php?category_id=" + category_id
         await fetch(url, {
             method: 'GET',
         })

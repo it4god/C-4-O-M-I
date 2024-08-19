@@ -42,7 +42,7 @@ export default class PDFsScreen extends React.Component {
         try {
             this.API_URL = await AsyncStorage.getItem('API_URL');
             if (this.API_URL !== null) {
-          
+
             }
             else {
                 await AsyncStorage.setItem('API_URL', this.api_url);
@@ -51,7 +51,7 @@ export default class PDFsScreen extends React.Component {
             // error reading value
         }
         this.DoGeneratePDF("")
-
+        this.DoGenerateBook("")
     }
 
     async DoGeneratePDF(searchvalue) {
@@ -60,9 +60,9 @@ export default class PDFsScreen extends React.Component {
         this.mypdf2 = []
         let url = "";
         if (searchvalue == "")
-            url = this.API_URL+ "c4omi/api-v2/pdfs.php"
+            url = this.API_URL + "c4omi/api-v3/pdfs.php"
         else
-            url = this.API_URL+ "c4omi/api-v2/pdfs.php?keyword=" + searchvalue
+            url = this.API_URL + "c4omi/api-v3/pdfs.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -82,61 +82,61 @@ export default class PDFsScreen extends React.Component {
             }
 
         }
-        for (let i = 0; i < category.length; i++) {
-            this.mypdfdetail = []
-            n = 0
-            for (let j = 0; j < this.data.length; j++) {
-
-                if (this.data[j].category_id == category[i]) {
-                    n = n + 1
-                    this.mypdfdetail.push(
-                        <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString() + category[i]} onPress={() => {
-                            this.props.navigation.navigate("PDF", {
-
-                                url: this.data[j].url,
-
-                            })
-
-                        }} >
-                            <View style={{ flex: 1, width: 210, height: 11 / 7 * 210 }}>
-                                {this.data[i].thumbnail != "" && (
-                                    <Image style={styles.box1}
-                                        source={{ uri: this.API_URL+ "c4omi-web-admin-v2/assets/uploads/files/thumbnail/" + this.data[i].thumbnail }}
-                                    />
-                                )}
-                                {this.data[i].thumbnail == "" && (
-                                    <Image style={styles.box1}
-                                        source={require('../assets/C4OMI-Logo.png')}
-                                    />
-                                )}
-                                {this.data[j].title.length > 25 && (
-                                    <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
-                                        <Text style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
-                                            {this.data[j].title}
-                                        </Text>
-                                    </View>
-                                )}
-                                {this.data[j].title.length <= 25 && (
-                                    <Text style={{ paddingHorizontal: 8 }}>
-                                        {this.data[j].title.substring(0, 25)}
-                                    </Text>
-                                )}
-                            </View>
-                        </TouchableOpacity>
-                    )
-
-                }
-                if (n > 10) break;
-
-            }
+        this.mypdfdetail = []
+        for (let j = 0; j < this.data.length; j++) {
 
 
-            this.shuffle(this.mypdfdetail)
+            n = n + 1
             this.mypdfdetail.push(
-                <TouchableOpacity key={"More-pdf" + i.toString()} onPress={() => {
-                    this.mypdf2 = []
-                    for (let j = 0; j < this.data.length; j++) {
-                        if (this.data[j].category_id == category[i])
+                <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString()} onPress={() => {
+                    this.props.navigation.navigate("PDF", {
+
+                        url: this.data[j].url,
+
+                    })
+
+                }} >
+                    <View style={{ flex: 1, width: 210, height: 12 / 7 * 210 }}>
+                        {this.data[j].thumbnail != "" && (
+                            <Image style={styles.box1}
+                                source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
+                            />
+                        )}
+                        {this.data[j].thumbnail == "" && (
+                            <Image style={styles.box1}
+                                source={require('../assets/C4OMI-Logo.png')}
+                            />
+                        )}
+                        {this.data[j].title.length > 25 && (
+                            <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
+                                <Text style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                    {this.data[j].title}
+                                </Text>
+                            </View>
+                        )}
+                        {this.data[j].title.length <= 25 && (
+                            <Text style={{ paddingHorizontal: 8 }}>
+                                {this.data[j].title.substring(0, 25)}
+                            </Text>
+                        )}
+                    </View>
+                </TouchableOpacity>
+            )
+
+
+
+        }
+
+
+        this.shuffle(this.mypdfdetail)
+
+        this.mypdf.push(
+            <View key={Math.random() + "cat"}>
+                <View style={{ flexDirection: "row", flex: 1 }}>
+                    <Text category="h6" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>Free PDF</Text>
+                    <TouchableOpacity style={{}} onPress={() => {
+                        this.mypdf2 = []
+                        for (let j = 0; j < this.data.length; j++) {
                             this.mypdf2.push(
                                 <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={this.data[j].id} onPress={() => {
                                     this.props.navigation.navigate("PDF", {
@@ -147,7 +147,7 @@ export default class PDFsScreen extends React.Component {
                                 }} >
                                     {this.data[j].thumbnail != "" && (
                                         <Image style={styles.box1}
-                                            source={{ uri: this.API_URL+ "c4omi/api-v2//c4omi-web-admin/assets/uploads/files/thumbnail/" + this.data[i].thumbnail }}
+                                            source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
                                         />
                                     )}
                                     {this.data[j].thumbnail == "" && (
@@ -162,38 +162,183 @@ export default class PDFsScreen extends React.Component {
                                             </Text>
                                         )}
                                         {this.data[j].title.length <= 25 && (
-                                            <Text category="h6" style={{ paddingHorizontal: 8 }}>
+                                            <Text category="s1" style={{ paddingHorizontal: 8 }}>
                                                 {this.data[j].title.substring(0, 25)}
                                             </Text>
                                         )}
-                                        <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12 }}>C4OMI Indonesia</Text>
+
                                         <Text category="s2" style={{ paddingHorizontal: 8, fontSize: 13, color: "gray" }}>{this.data[j].author}</Text>
                                     </View>
 
                                 </TouchableOpacity>)
-                    }
+                        }
+                        ////////
+                        this.setState({ pdf2: this.mypdf2, page: 2 })
 
-                    this.setState({ pdf2: this.mypdf2, page: 2, category: category[i], category_name: category_name[i] })
-                }} >
-                    <View style={styles.boxmore}>
-                        <Image style={styles.boxmore}
-                            source={require('../assets/more.png')}
-                        />
-                    </View>
-                </TouchableOpacity>
-            )
-            this.mypdf.push(
-                <View key={i.toString() + "cat"}>
-                    <Text category="h6" style={{ marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
-                    <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
-                        {this.mypdfdetail}
-                    </ScrollView>
+                    }}>
+                        <Text style={{ flex: 2, color: "#007b7f", fontWeight: "400", marginTop: 14, marginRight: 3 }}>More</Text>
+                    </TouchableOpacity>
                 </View>
-            )
-            this.shuffle(this.mypdf)
+
+                <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
+                    {this.mypdfdetail}
+                </ScrollView>
+            </View>
+        )
+        this.shuffle(this.mypdf)
+        this.setState({ pdf: this.mypdf })
+
+
+
+
+    }
+
+    async DoGenerateBook(searchvalue) {
+        this.mybook = []
+        this.mybookdetail = []
+        this.mybook2 = []
+        let url = "";
+        if (searchvalue == "")
+            url = this.API_URL + "c4omi/api-v3/ebooks.php"
+        else
+            url = this.API_URL + "c4omi/api-v3/ebooks.php?keyword=" + searchvalue
+        await fetch(url, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then((responseJson) => {
+                this.data2 = responseJson
+                console.log(this.data2)
+            });
+
+        let n = 0
+        let category = []
+        let category_name = []
+        for (let i = 0; i < this.data2.length; i++) {
+            if (!category.includes(this.data2[i].category_id)) {
+                category.push(this.data2[i].category_id)
+                category_name.push(this.data2[i].category_name)
+            }
 
         }
-        this.setState({ pdf: this.mypdf })
+        for (let i = 0; i < category.length; i++) {
+            this.mybookdetail = []
+            n = 0
+            for (let j = 0; j < this.data2.length; j++) {
+                if (this.data2[j].category_id == category[i]) {
+                n = n + 1
+                this.mybookdetail.push(
+                    <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString() + category[i]} onPress={() => {
+                        this.props.navigation.navigate("Book", {
+                            id : this.data2[j].id,
+                            url : this.data2[j].url,
+                            thumbnail : this.data2[j].thumbnail,
+                            author : this.data2[j].author,
+                            category_name : this.data2[j].category_name,
+                            title : this.data2[j].title
+                        })
+
+                    }} >
+                        <View style={{ flex: 1, width: 210, height: 13 / 7 * 210 }}>
+                            {this.data2[j].thumbnail != "" && (
+                                <Image style={styles.box1}
+                                    source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
+                                />
+                            )}
+                            {this.data2[j].thumbnail == "" && (
+                                <Image style={styles.box1}
+                                    source={require('../assets/C4OMI-Logo.png')}
+                                />
+                            )}
+                            {this.data2[j].title.length > 25 && (
+                                <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
+                                    <Text style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                        {this.data2[j].title}
+                                    </Text>
+                                </View>
+                            )}
+                            {this.data2[j].title.length <= 25 && (
+                                <Text style={{ paddingHorizontal: 8 }}>
+                                    {this.data2[j].title.substring(0, 25)}
+                                </Text>
+                            )}
+                        </View>
+                    </TouchableOpacity>
+                )
+            }
+            if (n > 20) break;
+
+        }
+
+
+        this.shuffle(this.mybookdetail)
+
+        this.mybook.push(
+            <View key={Math.random() + "cat"}>
+                <View style={{ flexDirection: "row", flex: 1 }}>
+                    <Text category="h6" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
+                    <TouchableOpacity style={{}} onPress={() => {
+                        this.mybook2 = []
+                        for (let j = 0; j < this.data2.length; j++) {
+                            if (this.data2[j].category_id == category[i])
+                                this.mybook2.push(
+                                    <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={this.data2[j].id} onPress={() => {
+                                        this.props.navigation.navigate("Book", {
+                                            id : this.data2[j].id,
+                                            url : this.data2[j].url,
+                                            thumbnail : this.data2[j].thumbnail,
+                                            author : this.data2[j].author,
+                                            category_name : this.data2[j].category_name,
+                                            title : this.data2[j].title
+
+                                        })
+                                    }} >
+                                        {this.data2[j].thumbnail != "" && (
+                                            <Image style={styles.box1}
+                                                source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
+                                            />
+                                        )}
+                                        {this.data2[j].thumbnail == "" && (
+                                            <Image style={styles.box1}
+                                                source={require('../assets/C4OMI-Logo.png')}
+                                            />
+                                        )}
+                                        <View style={{ width: 300, flexShrink: 1 }}>
+                                            {this.data2[j].title.length > 25 && (
+                                                <Text category="s1" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                                    {this.data2[j].title}
+                                                </Text>
+                                            )}
+                                            {this.data2[j].title.length <= 25 && (
+                                                <Text category="s1" style={{ paddingHorizontal: 8 }}>
+                                                    {this.data2[j].title.substring(0, 25)}
+                                                </Text>
+                                            )}
+
+                                            <Text category="s2" style={{ paddingHorizontal: 8, fontSize: 13, color: "gray" }}>{this.data2[j].author}</Text>
+                                        </View>
+
+                                    </TouchableOpacity>)
+                        }
+                        ////////
+                        this.setState({ book2: this.mybook2, category: category[i], category_name: category_name[i], page: 3 })
+
+                    }}>
+                        <Text style={{ flex: 2, color: "#007b7f", fontWeight: "400", marginTop: 14, marginRight: 3 }}>More</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
+                    {this.mybookdetail}
+                </ScrollView>
+            </View>
+        )
+        this.shuffle(this.mybook)
+    }
+        this.setState({ book: this.mybook })
+
+
+
 
     }
     shuffle(array) {
@@ -214,6 +359,7 @@ export default class PDFsScreen extends React.Component {
 
     DoSearch() {
         this.DoGeneratePDF(this.state.searchvalue)
+        this.DoGenerateBook(this.state.searchvalue)
     }
 
     render() {
@@ -226,7 +372,7 @@ export default class PDFsScreen extends React.Component {
                     <TopNavigation
                         alignment='center'
                         title='C4OMI Indonesia'
-                        subtitle='E-Books'
+                        subtitle='Books / PDF / Ebooks'
                         accessoryLeft={(props) => (
                             <React.Fragment>
                                 <TouchableOpacity onPress={() => {
@@ -286,7 +432,37 @@ export default class PDFsScreen extends React.Component {
                             </React.Fragment>
                         )}
                     />)}
+{this.state.page == 3 && (
+                    <TopNavigation
+                        alignment='center'
+                        title='Books'
+                        subtitle={this.state.category_name}
+                        accessoryLeft={(props) => (
+                            <React.Fragment>
+                                <TouchableOpacity onPress={() => {
+                                    this.setState({ page: 1 })
+                                }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='arrow-back-outline'
+                                    />
+                                </TouchableOpacity>
+                            </React.Fragment>
 
+                        )}
+                        accessoryRight={(props) => (
+                            <React.Fragment>
+                                <TouchableOpacity onPress={() => { Alert.alert("Under Construction") }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='search-outline'
+                                    />
+                                </TouchableOpacity>
+                            </React.Fragment>
+                        )}
+                    />)}
                 <Divider />
                 {this.state.search == true && (
                     <Layout style={{ padding: 10 }}>
@@ -307,6 +483,14 @@ export default class PDFsScreen extends React.Component {
                 {this.state.page == 1 && (
                     <ScrollView showsVerticalScrollIndicator={false} style={{ margin: 5, flex: 1 }}>
                         {this.state.pdf}
+                        <View style={{ width: 2, height: 10 }}>
+
+                        </View>
+                        <Text category="h5" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>Books Recommendation</Text>
+                        {this.state.book}
+                        <View style={{ width: 2, height: 30 }}>
+
+                        </View>
                     </ScrollView>
                 )}
                 {this.state.page == 2 && (
@@ -314,7 +498,18 @@ export default class PDFsScreen extends React.Component {
                     <ScrollView style={{ flex: 1 }}>
                         <View style={{ width: 2, height: 20 }}></View>
                         {this.state.pdf2}
-                        <View style={{ width: 2, height: 100 }}>
+                        <View style={{ width: 2, height: 30 }}>
+
+                        </View>
+                    </ScrollView>
+
+                )}
+                {this.state.page == 3 && (
+
+                    <ScrollView style={{ flex: 1 }}>
+                        <View style={{ width: 2, height: 20 }}></View>
+                        {this.state.book2}
+                        <View style={{ width: 2, height: 30 }}>
 
                         </View>
                     </ScrollView>
@@ -365,30 +560,6 @@ export default class PDFsScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
 
                 </BottomNavigation>
-                <Modal visible={this.state.menuvisible}>
-                    <Card disabled={true}>
-                        <Text style={{ textAlign: "center" }}>
-                            Link-link
-                        </Text>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: false }) }}>
-                            Info, Edukasi dan Layanan Konseling - Rehabilitasi
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 2, luar_negeri: false }) }}>
-                            Platform Komunitas
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 3, luar_negeri: false }) }}>
-                            Platform Konseling Basis Apps
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: true }) }}>
-                            Situs Luar Negeri
-                        </Button>
-                        <View style={{ paddingHorizontal: 50 }}>
-                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); }}>
-                                Tutup
-                            </Button>
-                        </View>
-                    </Card>
-                </Modal>
             </Layout>
         );
     }
@@ -401,10 +572,11 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     box1: {
-        marginRight: 5, width: 200, height: 10 / 7 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
+        marginRight: 5, width: 200, height: 11 / 7 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
     },
     boxmore: {
-        marginRight: 5, width: 100, height: 100, borderRadius: 5
+        marginTop: 20,
+        marginRight: 5, width: 50, height: 50, borderRadius: 5, opacity: 0.7
     },
     icon: {
         width: 24,

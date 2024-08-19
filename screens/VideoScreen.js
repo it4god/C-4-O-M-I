@@ -19,6 +19,7 @@ import {
 
 } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImageView2 from "./ImageView2";
 export default class VideoScreen extends React.Component {
 
 
@@ -50,8 +51,9 @@ export default class VideoScreen extends React.Component {
     this.yt_id = this.props.route.params.youtube_id;
     this.category_id = this.props.route.params.category_id
     this.video_uri = "C4OMI-" + this.reverseString(this.yt_id) + "#Video"
-
-    this.related_url = this.API_URL+ "c4omi/api-v2/related_video.php?video_id=" + this.id
+    this.thumbnail = this.props.route.params.thumbnail
+    console.log("Hei " + this.thumbnail)
+    this.related_url = this.API_URL + "c4omi/api-v3/related_video.php?video_id=" + this.id
 
     await fetch(this.related_url, {
       method: 'GET',
@@ -71,10 +73,16 @@ export default class VideoScreen extends React.Component {
           this.setState({ selectedIndex: 0, yt_id: this.yt_id })
 
         }} >
-          <Image style={styles.box1}
-            source={require('../assets/C4OMI-Logo.png')}
-          />
-
+          {this.thumbnail == "app" && (
+            <ImageView2
+              index={this.data[j].youtube_id}
+            />
+          )}
+          {this.thumbnail != "app" && (
+            <Image style={styles.box1}
+              source={require('../assets/C4OMI-Logo.png')}
+            />
+          )}
           <View style={{ width: 300, flexShrink: 1 }}>
             {this.data[j].title.length > 25 && (
               <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>

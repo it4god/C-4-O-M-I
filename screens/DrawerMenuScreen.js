@@ -289,6 +289,37 @@ class DrawerMenuScreen extends Component {
               </View>
             </View>
             <View style={{ height: 10 }}></View>
+            <View
+              style={{
+                flexDirection: "row",
+                borderWidth: 1,
+                borderColor: '#e4e9f2',
+                borderRadius: 5,
+                marginRight: 15,
+                marginLeft: 15,
+                backgroundColor: '#f7f9fc',
+              }}
+            >
+              <View style={{ flex: 2, paddingTop: 9, paddingLeft: 20 }}>
+                <Icon
+                  style={styles.icon}
+                  name='alert-triangle-outline'
+                  fill='#8F9BB3'
+                />
+              </View>
+              <View style={styles.containerBottom}>
+                <TouchableOpacity
+                  onPress={() => { this.props.navigation.navigate("Disclaimer") }}
+                  style={styles.containerBottomItem}
+                >
+                  <View style={styles.button}>
+                    <Text style={styles.txtBottom}>
+                      Disclaimer
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
 
           <View

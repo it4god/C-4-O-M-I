@@ -19,7 +19,7 @@ import {
 } from '@ui-kitten/components';
 import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class ArticleScreen extends React.Component {
+export default class BundleScreen extends React.Component {
 
 
   constructor(props) {
@@ -36,25 +36,27 @@ export default class ArticleScreen extends React.Component {
     try {
       this.API_URL = await AsyncStorage.getItem('API_URL');
       if (this.API_URL !== null) {
-
+    
       }
       else {
-        await AsyncStorage.setItem('API_URL', this.api_url);
+          await AsyncStorage.setItem('API_URL', this.api_url);
       }
-    } catch (e) {
+  } catch (e) {
       // error reading value
-    }
+  }
     this.id = this.props.route.params.id;
-    this.category_id = this.props.route.params.category_id
+    console.log(this.id);
     this.bundle_id = this.props.route.params.bundle_id
     this.title = this.props.route.params.title;
     if (this.title.length > 35) {
       this.title = this.title.substring(0, 35) + "..."
     }
-    this.url = this.API_URL + "c4omi/articles/" + this.props.route.params.url;
+    this.url = this.API_URL+ "c4omi/articles/" + this.props.route.params.url;
+    console.log(this.url);
     this.uri = "http://c4omi.org/article.php?article_title=" + this.props.route.params.title.replaceAll(" ", "%20")
 
-    this.related_url = this.API_URL + "c4omi/api-v3/related_article.php?article_id=" + this.id
+    this.related_url = this.API_URL+ "c4omi/api-v3/related_article.php?article_id=" + this.id
+    console.log
     await fetch(this.related_url, {
       method: 'GET',
     })
@@ -72,41 +74,41 @@ export default class ArticleScreen extends React.Component {
     for (let j = 0; j < this.data.length; j++) {
       this.myarticle2.push(
         <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={Math.random()} onPress={() => {
-          this.generateNewArticleList(this.data[j].category_id, this.data[j].title, this.data[j].url)
+          this.generateNewArticleList(this.data[j].title, this.data[j].url)
           this.setState({ selectedIndex: 0 })
 
         }} >
-          {this.data[j].bundle_id == null && (
+          {this.bundle_id == null && (
             <Image style={styles.box1}
               source={require('../assets/C4OMI-Logo.png')}
             />
           )}
-          {this.data[j].bundle_id == 1 && (
+          {this.bundle_id == 1 && (
             <Image style={styles.box1}
               source={require('../assets/1.jpg')}
             />
           )}
-          {this.data[j].bundle_id == 2 && (
+          {this.bundle_id == 2 && (
             <Image style={styles.box1}
               source={require('../assets/2.jpg')}
             />
           )}
-          {this.data[j].bundle_id == 3 && (
+          {this.bundle_id == 3 && (
             <Image style={styles.box1}
               source={require('../assets/3.jpg')}
             />
           )}
-          {this.data[j].bundle_id == 4 && (
+          {this.bundle_id == 4 && (
             <Image style={styles.box1}
               source={require('../assets/4.jpg')}
             />
           )}
-          {this.data[j].bundle_id == 5 && (
+          {this.bundle_id == 5 && (
             <Image style={styles.box1}
               source={require('../assets/5.jpg')}
             />
           )}
-          {this.data[j].bundle_id == 6 && (
+          {this.bundle_id == 6 && (
             <Image style={styles.box1}
               source={require('../assets/6.jpg')}
             />
@@ -138,16 +140,15 @@ export default class ArticleScreen extends React.Component {
 
   }
 
-  async generateNewArticleList(category_id, title, url) {
-    this.category_id = category_id
+  async generateNewArticleList(title, url) {
     this.title = title
     if (this.title.length > 35) {
       this.title = this.title.substring(0, 35) + "..."
     }
-    this.url = this.API_URL + "c4omi/articles/" + url;
+    this.url = this.API_URL+ "c4omi/articles/" + url;
     this.uri = "http://c4omi.org/article.php?article_title=" + title.replaceAll(" ", "%20")
-    this.related_url = this.API_URL + "c4omi/api-v3/related_article.php?article_id=" + this.id
-    this.setState({ article2: this.myarticle2, page: 2, title: this.title, url: this.url })
+    this.related_url = this.API_URL+ "c4omi/api-v3/related_article.php?article_id=" + this.id
+   this.setState({ article2: this.myarticle2, page: 2, title: this.title, url: this.url })
 
 
 

@@ -18,8 +18,8 @@ import {
 //import Sound from 'react-native-sound';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class MobileDeveloperScreen extends React.Component {
+
+export default class DisclamerScreen extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -31,17 +31,17 @@ export default class MobileDeveloperScreen extends React.Component {
 
     }
 
- 
+
     render() {
         return (
             <Layout style={{ flex: 1 }}>
                 <TopNavigation
                     alignment='center'
                     title='C4OMI Indonesia'
-                    subtitle='Pengembang Aplikasi'
+                    subtitle='Disclaimer'
                     accessoryLeft={(props) => (
                         <React.Fragment>
-                            <TouchableOpacity onPress={()=>{this.props.navigation.navigate("DrawerMenu")}}>
+                            <TouchableOpacity onPress={() => { this.props.navigation.navigate("DrawerMenu") }}>
                                 <Icon
                                     style={styles.icon}
                                     fill='#8F9BB3'
@@ -56,7 +56,7 @@ export default class MobileDeveloperScreen extends React.Component {
                 <ScrollView showsVerticalScrollIndicator={false}
                     style={{ flex: 1 }}
                 >
-                    <Layout style={{ padding: 15, paddingHorizontal :20  }}>
+                    <Layout style={{ padding: 15, paddingHorizontal: 20 }}>
                         <View style={{ justifyContent: "center", alignItems: "center" }}>
                             <Image
                                 style={{
@@ -68,24 +68,25 @@ export default class MobileDeveloperScreen extends React.Component {
                                 source={require("../assets/c4omi.jpg")}
                             />
                         </View>
-                        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
-                            Pengembang Aplikasi C4OMI
+                        
+                        <Text style={{ textAlign: "center", fontWeight: "bold", marginBottom:20 }}>
+                            Disclaimer
                         </Text>
                         <Text style={{ textAlign: "justify" }}>
-                            {"\n"}
-                            Saya, Jeffrey Lim, pengembang Aplikasi Android C4OMI kelahiran Bandung 7 Juni 1980 ini mempunyai hobi membaca, menulis, merenung, mengajar, membuat website dan aplikasi dan hal-hal seputar programming.
-                            Di tahun 2000, saat menempuh kuliah Bachelor of Computing di Sydney, Jeffrey didiagnosa menderita gangguan Skizoafektif. Sesudah kuliah S1-nya di University of Technology Sydney (UTS), Jeffrey kembali ke Indonesia dan mengambil kuliah S2 Teologi. 
-                            Liku-liku perkuliahan selama 17 tahun, bolak-balik masuk sanatorium kurang lebih 10x, Jeffrey tetap menghadapi hidup dengan berharap pada anugerah Tuhan.
+                            Aplikasi ini dikembangkan sebagai inisiatif non-profit dengan tujuan promotif dan preventif dalam kesehatan mental. Semua konten yang terdapat dalam aplikasi ini, termasuk tetapi tidak terbatas pada teks, grafik, logo, ikon, gambar, perangkat lunak, serta tulisan dan artikel yang dilisensikan oleh pihak ketiga atau berasal dari situs web NAMI (National Alliance on Mental Illness), adalah milik pengembang aplikasi atau pihak ketiga yang memberikan lisensi. Informasi dan materi ini disediakan semata-mata untuk keperluan edukasi dan peningkatan kesadaran masyarakat.
                             {"\n\n"}
-                            Di tahun 2008, ditegakkan kembali diagnosanya sebagai Penderita Bipolar dengan gejala psikotik. Jeffrey sudah menikah dengan Laura Lee, seorang dokter dan dikaruniakan seorang anak perempuan, Fidelia Charis.
-                            Jeffrey juga mempunyai usaha IT <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://limpingen.com') }}>Limpingen Soft Comp </Text> dan mengajar IT di <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://letscode.id') }}>Let's Code</Text> serta melayani di <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://nepho.id') }}>Nepho Ministry</Text> dan juga mendirikan IT Club di gereja yaitu <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://it4god.org') }}>IT4God Club</Text>.
+                            Informasi yang diberikan, termasuk artikel yang diambil dari situs web NAMI, tidak dimaksudkan untuk menggantikan nasihat, diagnosis, atau perawatan medis profesional. Pengguna disarankan untuk berkonsultasi dengan profesional kesehatan mental atau medis yang berkualifikasi untuk evaluasi dan penanganan kondisi mereka.
                             {"\n\n"}
-                            Sekalipun orang-orang yang bergumul dengan kesehatan mental harus menjalani pergumulan yang lebih berat dalam keseharian dibandingkan orang-orang pada umumnya, namun Jeffrey percaya bahwa kita adalah manusia yang sama berharga di mata Tuhan, turut dapat bersumbangsih dalam masyarakat, menghasilkan karya dan menjadi berkat.
+                            Pengembang aplikasi berhak memperbarui atau mengubah konten yang disediakan dalam aplikasi ini kapan saja tanpa pemberitahuan sebelumnya. Pengguna disarankan untuk memeriksa informasi terbaru atau pembaruan aplikasi secara berkala untuk memastikan mereka mengakses informasi yang paling terkini.
                             {"\n\n"}
-                            Soli Deo Gloria
-                            {"\n"}
-                            Jeffrey Lim {"\n"}
+                            Pengguna tidak diperkenankan menyalin, menyebarluaskan, memodifikasi, atau menggunakan konten untuk tujuan komersial tanpa izin tertulis. Penggunaan aplikasi ini hanya diperbolehkan untuk kepentingan pribadi dan non-komersial.
+                            {"\n\n"}
+                            Pengembang aplikasi tidak bertanggung jawab atas konten, layanan, atau materi yang disediakan oleh pihak ketiga yang mungkin diakses melalui aplikasi ini. Semua tindakan yang diambil berdasarkan informasi dari aplikasi ini sepenuhnya menjadi tanggung jawab pengguna.
+                            {"\n\n"}
                         </Text>
+                        <Image style={{ marginTop: 0, width: width - 40, height: (width - 40) / 5 }}
+                            source={require('../assets/logo.png')}
+                        />
                     </Layout>
                 </ScrollView >
 

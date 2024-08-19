@@ -21,9 +21,6 @@ import {
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import moment from 'moment'
-
-
 export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props)
@@ -31,8 +28,6 @@ export default class HomeScreen extends React.Component {
             menuvisible: false,
             selectedIndex: 0
         }
-
-        this.videourl = ""
     }
     async componentDidMount() {
         let api_url = "http://limpingen.org/api_url.php"
@@ -42,7 +37,7 @@ export default class HomeScreen extends React.Component {
             .then(response => response.json())
             .then((responseJson) => {
                 this.api_url = responseJson[0].apikey
-                this.videourl = this.api_url + "c4omi/api-v3/videos.php"
+                console.log(this.api_url)
             });
         try {
             this.API_URL = await AsyncStorage.getItem('API_URL');
@@ -50,30 +45,10 @@ export default class HomeScreen extends React.Component {
                 if (this.API_URL != this.api_url) {
                     await AsyncStorage.setItem('API_URL', this.api_url);
                     this.API_URL = this.api_url;
-                    this.videourl = this.API_URL + "c4omi/api-v3/videos.php"
                 }
             }
             else {
                 await AsyncStorage.setItem('API_URL', this.api_url);
-            }
-            const cacheIntervalInHours = 0
-            const cacheExpiryTime = new Date()
-            cacheExpiryTime.setHours(cacheExpiryTime.getHours() + cacheIntervalInHours)
-            const lastRequest = await AsyncStorage.getItem("lastRequest")
-            console.log(this.videourl)
-            if (lastRequest == null || Date(lastRequest) > cacheExpiryTime) {
-                await fetch(this.videourl, {
-                    method: 'GET',
-                })
-                    .then(response => response.json())
-                    .then((responseJson) => {
-                        this.data = responseJson
-                        AsyncStorage.setItem("lastRequest", new Date().toDateString());
-                        AsyncStorage.setItem('videos', JSON.stringify(responseJson))
-                    })
-                    .catch(error => {
-                        console.error(error)
-                    })
             }
         } catch (e) {
             // error reading value
@@ -92,98 +67,11 @@ export default class HomeScreen extends React.Component {
         Linking.addEventListener('url', event => {
             this.DeepLinkingNavigate(event.url)
         })
-
         this.menuvisible = this.props.route.params?.menuvisible;
         this.setState({ menuvisible: this.menuvisible })
-        this.bundle = []
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"Life Story - 6"}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 6 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/6.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >Life Story</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"Journey with Mental Illness - 5"}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 5 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/1.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >Journey with Mental Illness</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"Family Members as Caregivers - 4"}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 4 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/2.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >Family Members as Caregivers</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"Young Adult and Mental Illness - 3 "}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 3 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/3.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >Young Adult and Mental Illness</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"Kids and Mental Illness - 2"}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 2 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/4.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >Kids and Mental Illness</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
 
-        this.bundle.push(
-            <Layout level="4" style={{ marginTop: 10, width: width - 30, borderRadius: 15, marginRight: 10, paddingBottom: 10 }} key={"About Mental Illness - 1"}>
-                <Layout level="4" style={{ width: width - 30 }}>
-                    <TouchableOpacity style={{ flex: 5 }} onPress={() => { this.props.navigation.navigate("Bundles", { "article_bundle_id": 1 }) }}>
-                        <Image onPress={() => { }} style={{ width: width - 30, height: (width - 30) * 9 / 16, borderTopLeftRadius: 7, borderTopRightRadius: 7 }} source={require('../assets/5.jpg')} />
-                    </TouchableOpacity>
-                </Layout>
-                <Text style={{ flex: 5, paddingLeft: 10, paddingTop: 8 }} category="h6" >About Mental Illness</Text>
-                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">C4OMI Indonesia</Text>
-            </Layout>
-        )
 
-        this.shuffle(this.bundle)
-        this.setState({ isloading: true })
     }
-    shuffle(array) {
-        let currentIndex = array.length;
-
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
-
-            // Pick a remaining element...
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            // And swap it with the current element.
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
-        }
-    }
-
-
     reverseString(str) {
         return str.split("").reverse().join("");
     }
@@ -198,7 +86,7 @@ export default class HomeScreen extends React.Component {
 
 
                 url = this.API_URL + "c4omi/api-v3/video.php?video_uri=" + this.uri
-
+                
                 await fetch(url, {
                     method: 'GET',
                 })
@@ -263,7 +151,6 @@ export default class HomeScreen extends React.Component {
     }
 
     render() {
-        const date = new Date()
         return (
             <Layout style={{ flex: 1 }}>
                 <TopNavigation
@@ -298,21 +185,33 @@ export default class HomeScreen extends React.Component {
                 <ScrollView showsVerticalScrollIndicator={false}
                     style={{ flex: 1 }}
                 >
-
                     <Layout style={{ padding: 15 }}>
-                        <View style={{ flex: 1, paddingTop: 10 }}>
-                            <Text category="s1" style={{ textAlign: "center", fontSize: 14 }}>{moment().format('MMMM Do YYYY, h:mm:ss a')}</Text>
+                        <View style={{ justifyContent: "center", alignItems: "center" }}>
+                            <Image
+                                style={{
+                                    borderRadius: 5,
+                                    width: 120,
+                                    height: 120,
+                                    alignItems: "center",
+                                }}
+                                source={require("../assets/c4omi.jpg")}
+                            />
                         </View>
-                        <View style={{ flex: 1, paddingBottom: 10 }}>
-                            <Text style={{ textAlign: "center" }} category="h5">Selamat Datang</Text>
-                        </View>
-                        <Image style={{ marginTop: 0, width: width - 40, height: (width - 40) / 5 }}
+                        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
+                            Apa itu C4OMI ?
+                        </Text>
+                        <Text style={{ textAlign: "justify" }}>
+                            {"\n"}
+                            • C40MI adalah Komunitas Akar Rumput dari Keluarga-keluarga dan Individu-individu yang terdampak oleh GKM (Gangguan Kesehatan Mental), sehingga mereka tidak sendirian, tetapi belajar saling menerima, mendukung, mengobarkan harapan, memberdayakan, bahkan berkarya, berdampak bagi sesama.
+                            {"\n"}
+                            • C4OMI memberikan penyuluhan, pendampingan, pembelaan (advocacy) agar mereka belajar membangun kehidupan yang sehat, seimbang, berkualitas, dan dihormati, tanpa diskriminasi dan stigma.
+                            {"\n"}
+                            • C4OMI membangun jejaring narasumber dan informasi bantuan konsultasi, perawatan, pengobatan yang bisa diakses dan digunakan bagi mereka yang membutuhkan.
+                            {"\n"}
+                        </Text>
+                        <Image style={{ marginTop: 20, width: width - 40, height: (width - 40) / 5 }}
                             source={require('../assets/logo.png')}
                         />
-                        <View style={{ height: 3 }}>
-
-                        </View>
-                        {this.bundle}
                     </Layout>
                 </ScrollView >
                 <Divider />

@@ -44,7 +44,7 @@ export default class EventScreen extends React.Component {
     } catch (e) {
       // error reading value
     }
-    url = this.API_URL + "c4omi/api-v2/event.php"
+    url = this.API_URL + "c4omi/api-v3/event.php"
 
     await fetch(url, {
       method: 'GET',

@@ -20,6 +20,9 @@ import {
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import ImageView from "./ImageView";
+import ImageView2 from "./ImageView2";
 export default class VideosScreen extends React.Component {
 
     constructor(props) {
@@ -49,7 +52,7 @@ export default class VideosScreen extends React.Component {
         } catch (e) {
             // error reading value
         }
-        
+
     }
 
     async DoGenerateVideo(searchvalue) {
@@ -59,23 +62,39 @@ export default class VideosScreen extends React.Component {
         this.myvideodetail = []
         this.myvideo2 = []
         let url = "";
-        if (searchvalue == "")
-            url = this.API_URL+ "c4omi/api-v2/videos.php"
+        /*
+
+*/
+
+        const videos = await AsyncStorage.getItem('videos')
+        if (videos && searchvalue == "") {
+            try {
+                this.data = JSON.parse(videos)
+                console.log("Here")
+            } catch (e) {
+                console.warn("fetch Error: ", error)
+            }
+
+        }
         else
-            url = this.API_URL+ "c4omi/api-v2/videos.php?keyword=" + searchvalue
+        {
+            if (searchvalue == "")
+                url = this.API_URL + "c4omi/api-v3/videos.php"
+            else
+                url = this.API_URL + "c4omi/api-v3/videos.php?keyword=" + searchvalue
     
-        await fetch(url, {
-            method: 'GET',
-        })
-            .then(response => response.json())
-            .then((responseJson) => {
-                this.data = responseJson
-
-            });
-
+            await fetch(url, {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then((responseJson) => {
+                    this.data = responseJson
+    
+                });
+        }
         let n = 0
-        category = []
-        category_name = []
+        let category = []
+        let category_name = []
         for (let i = 0; i < this.data.length; i++) {
             if (!category.includes(this.data[i].category_id)) {
                 category.push(this.data[i].category_id)
@@ -90,23 +109,31 @@ export default class VideosScreen extends React.Component {
 
                 if (this.data[j].category_id == category[i]) {
                     n = n + 1
+
                     this.myvideodetail.push(
                         <TouchableOpacity style={{ flexWrap: "nowrap" }} key={j.toString() + category[i]} onPress={() => {
                             this.props.navigation.navigate("Video", {
                                 title: this.data[j].title,
                                 id: this.data[j].id,
                                 youtube_id: this.data[j].youtube_id,
-                                category_id: this.data[j].category_id
+                                category_id: this.data[j].category_id,
+                                thumbnail: this.data[j].thumbnail
                             })
 
                         }} >
-                            <View style={{ flex: 1, width: 210, height: 10 / 16 * 300 }}>
-                                <Image style={styles.box1}
-                                    source={require('../assets/C4OMI-Logo.png')}
-                                />
-
+                            <View style={{ flex: 1, width: 260, height: 10 / 16 * 280 }}>
+                                {this.data[j].thumbnail == "app" && (
+                                    <ImageView
+                                        index={this.data[j].youtube_id}
+                                    />
+                                )}
+                                {this.data[j].thumbnail != "app" && (
+                                    <Image style={styles.box1}
+                                        source={require('../assets/C4OMI-Logo.png')}
+                                    />
+                                )}
                                 {this.data[j].title.length > 25 && (
-                                    <View style={{ width: 210, flexDirection: "row", flexShrink: 1 }}>
+                                    <View style={{ width: 260, flexDirection: "row", flexShrink: 1 }}>
                                         <Text category="p2" style={{ flex: 1, flexWrap: "wrap", paddingHorizontal: 8 }}>
                                             {this.data[j].title}
                                         </Text>
@@ -139,13 +166,21 @@ export default class VideosScreen extends React.Component {
                                         title: this.data[j].title,
                                         id: this.data[j].id,
                                         youtube_id: this.data[j].youtube_id,
-                                        category_id: this.data[j].category_id
+                                        category_id: this.data[j].category_id,
+                                        thumbnail: this.data[j].thumbnail
                                     })
                                 }} >
 
-                                    <Image style={styles.box1}
-                                        source={require('../assets/C4OMI-Logo.png')}
-                                    />
+                                    {this.data[j].thumbnail == "app" && (
+                                        <ImageView2
+                                            index={this.data[j].youtube_id}
+                                        />
+                                    )}
+                                    {this.data[j].thumbnail != "app" && (
+                                        <Image style={styles.box1}
+                                            source={require('../assets/C4OMI-Logo.png')}
+                                        />
+                                    )}
                                     <View style={{ width: 300, flexShrink: 1 }}>
                                         {this.data[j].title.length > 25 && (
                                             <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
@@ -158,9 +193,9 @@ export default class VideosScreen extends React.Component {
                                             </Text>
                                         )}
                                         <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
-                                        <Text style={{ paddingHorizontal: 8,fontSize: 12, fontStyle:"italic" }}>
-                                                {this.data[j].category_name}
-                                            </Text>
+                                        <Text style={{ paddingHorizontal: 8, fontSize: 12, fontStyle: "italic" }}>
+                                            {this.data[j].category_name}
+                                        </Text>
                                     </View>
 
                                 </TouchableOpacity>)
@@ -169,15 +204,64 @@ export default class VideosScreen extends React.Component {
                     this.setState({ video2: this.myvideo2, page: 2, category: category[i], category_name: category_name[i] })
                 }} >
                     <View style={styles.boxmore}>
-                        <Image style={styles.boxmore}
-                            source={require('../assets/more.png')}
-                        />
+
                     </View>
                 </TouchableOpacity>
             )
             this.myvideo.push(
                 <View key={i.toString() + "cat"}>
-                    <Text category="h6" style={{ marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
+                    <View style={{ flex: 1, flexDirection: "row" }}>
+                        <Text category="h6" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>{category_name[i]}</Text>
+                        <TouchableOpacity style={{}} onPress={() => {
+                            this.myvideo2 = []
+                            for (let j = 0; j < this.data.length; j++) {
+                                if (this.data[j].category_id == category[i])
+                                    this.myvideo2.push(
+                                        <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={this.data[j].id} onPress={() => {
+                                            this.props.navigation.navigate("Video", {
+                                                title: this.data[j].title,
+                                                id: this.data[j].id,
+                                                youtube_id: this.data[j].youtube_id,
+                                                category_id: this.data[j].category_id,
+                                                thumbnail: this.data[j].thumbnail
+                                            })
+                                        }} >
+
+                                            {this.data[j].thumbnail == "app" && (
+                                                <ImageView2
+                                                    index={this.data[j].youtube_id}
+                                                />
+                                            )}
+                                            {this.data[j].thumbnail != "app" && (
+                                                <Image style={styles.box1}
+                                                    source={require('../assets/C4OMI-Logo.png')}
+                                                />
+                                            )}
+                                            <View style={{ width: 300, flexShrink: 1 }}>
+                                                {this.data[j].title.length > 25 && (
+                                                    <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                                        {this.data[j].title}
+                                                    </Text>
+                                                )}
+                                                {this.data[j].title.length <= 25 && (
+                                                    <Text category="p2" style={{ paddingHorizontal: 8 }}>
+                                                        {this.data[j].title.substring(0, 25)}
+                                                    </Text>
+                                                )}
+                                                <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
+                                                <Text style={{ paddingHorizontal: 8, fontSize: 12, fontStyle: "italic" }}>
+                                                    {this.data[j].category_name}
+                                                </Text>
+                                            </View>
+
+                                        </TouchableOpacity>)
+                            }
+
+                            this.setState({ video2: this.myvideo2, page: 2, category: category[i], category_name: category_name[i] })
+                        }}>
+                            <Text style={{ flex: 2, color: "#007b7f", fontWeight:"400", marginTop: 14, marginRight:3 }}>More</Text>
+                        </TouchableOpacity>
+                    </View>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
                         {this.myvideodetail}
                     </ScrollView>
@@ -305,7 +389,7 @@ export default class VideosScreen extends React.Component {
                     </ScrollView>
 
                 )}
-                <Divider/>
+                <Divider />
                 <BottomNavigation
                     appearance='noIndicator'
                     accessibilityIgnoresInvertColors={true}
@@ -329,7 +413,7 @@ export default class VideosScreen extends React.Component {
                             this.props.navigation.navigate("Event")
                         }
                         if (index == 4) {
-                            this.props.navigation.replace("Home", {menuvisible : true})
+                            this.props.navigation.replace("Home", { menuvisible: true })
                             this.setState({ menuvisible: true })
                         }
                         if (index == 5) {
@@ -350,30 +434,6 @@ export default class VideosScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
 
                 </BottomNavigation>
-                <Modal visible={this.state.menuvisible}>
-                    <Card disabled={true}>
-                        <Text style={{ textAlign: "center" }}>
-                            Link-link
-                        </Text>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: false }) }}>
-                            Info, Edukasi dan Layanan Konseling - Rehabilitasi
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 2, luar_negeri: false }) }}>
-                            Platform Komunitas
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 3, luar_negeri: false }) }}>
-                            Platform Konseling Basis Apps
-                        </Button>
-                        <Button style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }); this.props.navigation.popToTop(); this.props.navigation.navigate("Links", { category_id: 1, luar_negeri: true }) }}>
-                            Situs Luar Negeri
-                        </Button>
-                        <View style={{ paddingHorizontal: 50 }}>
-                            <Button size="small" appearance='outline' style={{ margin: 5 }} onPress={() => { this.setState({ menuvisible: false }) ;this.props.navigation.popToTop(); }}>
-                                Tutup
-                            </Button>
-                        </View>
-                    </Card>
-                </Modal>
             </Layout>
         );
     }
@@ -386,10 +446,14 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     box1: {
+        marginRight: 5, width: 250, height: 9 / 16 * 250, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
+    },
+    box2: {
         marginRight: 5, width: 200, height: 9 / 16 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
     },
     boxmore: {
-        marginRight: 5, width: 100, height: 100, borderRadius: 5
+        marginTop: 20,
+        marginRight: 5, width: 50, height: 50, borderRadius: 5, opacity: 0.7
     },
     icon: {
         width: 24,
