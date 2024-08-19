@@ -23,6 +23,10 @@ import LinksScreen from "./screens/LinksScreen";
 import EventScreen from "./screens/EventScreen";
 import MoreScreen from "./screens/MoreScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import BundlesScreen from "./screens/BundlesScreen";
+import BundleScreen from "./screens/BundleScreen";
+import DisclamerScreen from "./screens/DisclaimerScreen";
+import BookScreen from "./screens/BookScreen";
 const Stack = createNativeStackNavigator();
 import * as eva from '@eva-design/eva';
 export default class App extends React.Component {
@@ -82,6 +86,14 @@ export default class App extends React.Component {
               <Stack.Screen name="More" component={MoreScreen}
                 options={{ headerShown: false, animation: 'none' }} />
               <Stack.Screen name="Register" component={RegisterScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Bundles" component={BundlesScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Bundle" component={BundleScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Disclaimer" component={DisclamerScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Book" component={BookScreen}
                 options={{ headerShown: false, animation: 'none' }} />
             </Stack.Navigator>
           </NavigationContainer>
