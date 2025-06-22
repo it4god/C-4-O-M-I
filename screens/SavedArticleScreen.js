@@ -19,22 +19,23 @@ import {
 } from '@ui-kitten/components';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+import SQLite from 'react-native-sqlite-2'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class BundlesScreen extends React.Component {
+export default class SavedArticlesScreen extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            bundle: [],
-            bundle2: [],
+            article: [],
+            article2: [],
             page: 2,
             search: false,
             searchvalue: '',
             menuvisible: false
         }
-        this.mybundle = []
-        this.mybundledetail = []
-        this.mybundle2 = []
+        this.myarticle = []
+        this.myarticledetail = []
+        this.myarticle2 = []
     }
 
     async componentDidMount() {
@@ -49,120 +50,135 @@ export default class BundlesScreen extends React.Component {
         } catch (e) {
             // error reading value
         }
-        this.article_bundle_id = this.props.route.params.article_bundle_id
-        this.DoGeneratebundle()
+        this.DoGenerateArticle("")
     }
 
-    async DoGeneratebundle() {
-
-        this.mybundle = []
-        this.mybundledetail = []
-        this.mybundle2 = []
-        let url = this.API_URL + "c4omi/c4omi-api/bundle.php?article_bundle_id=" + this.article_bundle_id
-        console.log(url)
+    async DoGenerateArticle(searchvalue) {
+        this.myarticle = []
+        this.myarticledetail = []
+        this.myarticle2 = []
+        if (searchvalue == "")
+            url = this.API_URL + "c4omi/c4omi-api/articles.php"
+        else
+            url = this.API_URL + "c4omi/c4omi-api/articles.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
             .then(response => response.json())
             .then((responseJson) => {
                 this.data = responseJson
+                console.log(this.data)
             });
 
-        for (let j = 0; j < this.data.length; j++) {
-            this.mybundle2.push(
-                <TouchableOpacity style={{ flexDirection: "row", margin: 5, marginLeft: 15 }} key={Math.random()} onPress={() => {
-                    this.props.navigation.navigate("Bundle", {
-                        id: this.data[j].id,
-                        title: this.data[j].title,
-                        url: this.data[j].url,
-                        bundle_id: this.data[j].bundle_id,
-                        bundle_name: this.data[j].bundle_name
-                    })
-                }} >
-                    {this.data[j].bundle_name == "Life Story" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/6.jpg')}
-                        />
-                    )}
-                    {this.data[j].bundle_name == "About Mental Illness" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/5.jpg')}
-                        />
-                    )}
-                    {this.data[j].bundle_name == "Kids and Mental Illness" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/4.jpg')}
-                        />
-                    )}
-                    {this.data[j].bundle_name == "Young Adults and Mental Illness" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/3.jpg')}
-                        />
-                    )}
-                    {this.data[j].bundle_name == "Family Members as Caregivers" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/2.jpg')}
-                        />
-                    )}
-                    {this.data[j].bundle_name == "Journey with Mental Illness" && (
-                        <Image style={styles.box1}
-                            source={require('../assets/1.jpg')}
-                        />
-                    )}
 
-                    <View style={{ width: 300, flexShrink: 1 }}>
-                        {this.data[j].title.length > 25 && (
-                            <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
-                                {this.data[j].title}
-                            </Text>
-                        )}
-                        {this.data[j].title.length <= 25 && (
-                            <Text category="p2" style={{ paddingHorizontal: 8 }}>
-                                {this.data[j].title.substring(0, 25)}
-                            </Text>
-                        )}
-                        <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
-                        <Text style={{ fontSize: 12, paddingHorizontal: 8, fontStyle: "italic" }}>
-                            {this.data[j].bundle_name}
-                        </Text>
-                    </View>
+        const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+        db.transaction(tx => {
+            tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS article_tag(' +
+                'id INTEGER PRIMARY KEY NOT NULL, ' +
+                'article_id TEXT, ' + 'title TEXT, ' + 'bundle_id TEXT, ' + 'url TEXT, ' +
+                'tag_value TEXT);',
+                [],
+                this.successCB,
+                this.errorStatementCB
+            )
 
-                </TouchableOpacity>)
-        }
+        
+
+        tx.executeSql('SELECT * from article_tag ORDER BY id ASC', [], async (tx, results) => {
+
+            const rows = results.rows;
+            if (rows.length > 0) {
+                console.log(rows)
+                for (let i = 0; i < rows.length; i++) {
+
+                    this.myarticle2.push(
+                        <TouchableOpacity style={{ flexDirection: "row", margin: 5 }} key={Math.random()} onPress={() => {
+                            this.props.navigation.replace("Article", {
+                                title: rows.item(i).title,
+                                id: rows.item(i).article_id,
+                                category_id: rows.item(i).category_id,
+                                url: rows.item(i).url,
+                                bundle_id: rows.item(i).bundle_id,
+
+                            })
+                        }} >
+                            {rows.item(i).bundle_id == null && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/C4OMI-Logo.png')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 1 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/1.jpg')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 2 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/2.jpg')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 3 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/3.jpg')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 4 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/4.jpg')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 5 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/5.jpg')}
+                                />
+                            )}
+                            {rows.item(i).bundle_id == 6 && (
+                                <Image style={styles.box2}
+                                    source={require('../assets/6.jpg')}
+                                />
+                            )}
+                            <View style={{ width: 300, flexShrink: 1 }}>
+
+                                <Text category="p2" style={{ flexWrap: "wrap", paddingHorizontal: 8 }}>
+                                    {rows.item(i).title}
+                                </Text>
+
+                                <Text appearance='hint' style={{ paddingHorizontal: 8, fontSize: 12, }}>C4OMI Indonesia</Text>
+                                <Text style={{ fontSize: 12, paddingHorizontal: 8, fontStyle: "italic" }}>
+                                    {"Saved Articled"}
+                                </Text>
+                            </View>
+
+                        </TouchableOpacity>)
+                }
+
+                this.setState({ article2: this.myarticle2, page: 2 })
 
 
-        this.mybundle2.push(
-            <View key={Math.random() + "cat"}>
-                <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
-                    {this.mybundledetail}
-                </ScrollView>
-            </View>
-        )
-
-
-        this.setState({ bundle2: this.mybundle2 })
+            }
+        })
+        
+    })
+}
+    
 
 
 
-    }
+    
 
     shuffle(array) {
-        let currentIndex = array.length;
-
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
-
-            // Pick a remaining element...
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            // And swap it with the current element.
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
+        let oldElement;
+        for (let i = array.length - 1; i > 0; i--) {
+            let rand = Math.floor(Math.random() * (i + 1));
+            oldElement = array[i];
+            array[i] = array[rand];
+            array[rand] = oldElement;
         }
+        return array;
     }
     DoSearch() {
-        this.DoGeneratebundle(this.state.searchvalue)
+        this.DoGenerateArticle(this.state.searchvalue)
     }
 
     render() {
@@ -206,8 +222,8 @@ export default class BundlesScreen extends React.Component {
                 {this.state.page == 2 && (
                     <TopNavigation
                         alignment='center'
-                        title='Artikel-artikel'
-                        subtitle={this.state.category_name}
+                        title='C4OMI Indonesia'
+                        subtitle='Saved Articles'
                         accessoryLeft={(props) => (
                             <React.Fragment>
                                 <TouchableOpacity onPress={() => {
@@ -244,14 +260,14 @@ export default class BundlesScreen extends React.Component {
                 )}
                 {this.state.page == 1 && (
                     <ScrollView showsVerticalScrollIndicator={false} style={{ margin: 5, flex: 1 }}>
-                        {this.state.bundle}
+                        {this.state.article}
                     </ScrollView>
                 )}
                 {this.state.page == 2 && (
 
                     <ScrollView style={{ flex: 1 }}>
                         <View style={{ width: 2, height: 20 }}></View>
-                        {this.state.bundle2}
+                        {this.state.article2}
                         <View style={{ width: 2, height: 100 }}>
 
                         </View>
@@ -287,11 +303,11 @@ export default class BundlesScreen extends React.Component {
                         }
                         if (index == 5) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("ChatClient")
+                            this.props.navigation.navigate("CopingSkill")
                         }
                         if (index == 6) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("AIKonselor")
+                            this.props.navigation.navigate("Charity")
                         }
                     }}>
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
@@ -299,8 +315,8 @@ export default class BundlesScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
                 </BottomNavigation>
             </Layout>
@@ -315,10 +331,14 @@ const styles = StyleSheet.create({
         paddingTop: 30
     },
     box1: {
+        marginRight: 5, width: 250, height: 9 / 16 * 250, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
+    },
+    box2: {
         marginRight: 5, width: 200, height: 9 / 16 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
     },
     boxmore: {
-        marginRight: 5, width: 100, height: 100, borderRadius: 5
+        marginTop: 15,
+        marginRight: 5, width: 50, height: 50, borderRadius: 5, opacity: 0.7
     },
     icon: {
         width: 24,

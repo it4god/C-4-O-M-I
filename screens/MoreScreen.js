@@ -42,7 +42,7 @@ class MoreScreen extends Component {
   };
   async Share() {
 
-    this.message = 'Aplikasi Mobile C4OMI\n\nSilahkan Download di https://play.google.com/store/apps/details?id=com.it4god.c4omi'
+    this.message = 'Aplikasi Mobile *C4OMI*\n_Care for Overcomers on Mental Illness - Indonesia_\n\nAplikasi Informasi dan Edukasi seputar Mental Health di Indonesia\n- Ada ratusan lebih Video dengan subtitle Indonesia\n- Ada 70an lebih artikel \n- Ebooks \n- Link-link seputar komunitas dan info pemulihan / rehabilitasi di Indonesia\n- AI Konselor ( Chatbot Konseling )\n- Dukung karya GKM\nDll\n\nSilahkan Download di https://play.google.com/store/apps/details?id=com.it4god.c4omi'
 
     try {
       const result = await Share.share({

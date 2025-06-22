@@ -42,7 +42,7 @@ export default class HomeScreen extends React.Component {
             .then(response => response.json())
             .then((responseJson) => {
                 this.api_url = responseJson[0].apikey
-                this.videourl = this.api_url + "c4omi/api-v3/videos.php"
+                this.videourl = this.api_url + "c4omi/c4omi-api/videos.php"
             });
         try {
             this.API_URL = await AsyncStorage.getItem('API_URL');
@@ -50,13 +50,13 @@ export default class HomeScreen extends React.Component {
                 if (this.API_URL != this.api_url) {
                     await AsyncStorage.setItem('API_URL', this.api_url);
                     this.API_URL = this.api_url;
-                    this.videourl = this.API_URL + "c4omi/api-v3/videos.php"
+                    this.videourl = this.API_URL + "c4omi/c4omi-api/videos.php"
                 }
             }
             else {
                 await AsyncStorage.setItem('API_URL', this.api_url);
             }
-            const cacheIntervalInHours = 0
+            const cacheIntervalInHours = 24
             const cacheExpiryTime = new Date()
             cacheExpiryTime.setHours(cacheExpiryTime.getHours() + cacheIntervalInHours)
             const lastRequest = await AsyncStorage.getItem("lastRequest")
@@ -68,7 +68,7 @@ export default class HomeScreen extends React.Component {
                     .then(response => response.json())
                     .then((responseJson) => {
                         this.data = responseJson
-                        AsyncStorage.setItem("lastRequest", new Date().toDateString());
+                        AsyncStorage.setItem("lastRequest", new Date());
                         AsyncStorage.setItem('videos', JSON.stringify(responseJson))
                     })
                     .catch(error => {
@@ -197,7 +197,7 @@ export default class HomeScreen extends React.Component {
                 this.uri = this.reverseString(this.uri)
 
 
-                url = this.API_URL + "c4omi/api-v3/video.php?video_uri=" + this.uri
+                url = this.API_URL + "c4omi/c4omi-api/video.php?video_uri=" + this.uri
 
                 await fetch(url, {
                     method: 'GET',
@@ -216,7 +216,7 @@ export default class HomeScreen extends React.Component {
             }
             else if (url.includes("c4omi://article_title=")) {
                 this.uri = url.replace("c4omi://article_title=", "");
-                url = this.API_URL + "c4omi/api-v3/article.php?article_title=" + this.uri
+                url = this.API_URL + "c4omi/c4omi-api/article.php?article_title=" + this.uri
                 await fetch(url, {
                     method: 'GET',
                 })
@@ -240,7 +240,7 @@ export default class HomeScreen extends React.Component {
     }
     async Share() {
 
-        this.message = 'Aplikasi Mobile C4OMI\n\nSilahkan Download di https://play.google.com/store/apps/details?id=com.it4god.c4omi'
+        this.message = 'Aplikasi Mobile *C4OMI*\n_Care for Overcomers on Mental Illness - Indonesia_\n\nAplikasi Informasi dan Edukasi seputar Mental Health di Indonesia\n- Ada ratusan lebih Video dengan subtitle Indonesia\n- Ada 70an lebih artikel \n- Ebooks \n- Link-link seputar komunitas dan info pemulihan / rehabilitasi di Indonesia\n- AI Konselor ( Chatbot Konseling )\n- Dukung karya GKM\nDll\n\nSilahkan Download di https://play.google.com/store/apps/details?id=com.it4god.c4omi'
 
         try {
             const result = await Share.share({
@@ -315,7 +315,7 @@ export default class HomeScreen extends React.Component {
                         {this.bundle}
                     </Layout>
                 </ScrollView >
-                <Divider />
+              
                 <BottomNavigation
                     appearance='noIndicator'
                     accessibilityIgnoresInvertColors={true}
@@ -338,10 +338,10 @@ export default class HomeScreen extends React.Component {
                             this.setState({ menuvisible: true })
                         }
                         if (index == 5) {
-                            this.props.navigation.navigate("ChatClient")
+                            this.props.navigation.navigate("CopingSkill")
                         }
                         if (index == 6) {
-                            this.props.navigation.navigate("AIKonselor")
+                            this.props.navigation.navigate("Charity")
                         }
                     }}>
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
@@ -349,8 +349,8 @@ export default class HomeScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
                 </BottomNavigation>
                 <Modal visible={this.state.menuvisible}>

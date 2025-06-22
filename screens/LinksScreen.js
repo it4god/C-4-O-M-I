@@ -14,7 +14,7 @@ import {
     Divider,
     Text,
     Input,
-    List, ListItem, Button
+    List, ListItem, Button, Card
 } from '@ui-kitten/components';
 const width = Dimensions.get('window').width;
 const halfheight = Dimensions.get('window').height;
@@ -28,7 +28,8 @@ export default class LinksScreen extends React.Component {
             link2: [],
             page: 1,
             search: false,
-            searchvalue: ''
+            searchvalue: '',
+            links: []
         }
         this.mylink = []
         this.mylinkdetail = []
@@ -36,16 +37,16 @@ export default class LinksScreen extends React.Component {
     }
 
     async componentDidMount() {
-        
 
-        
+
+
         this.category_id = this.props.route.params.category_id
         this.luar_negeri = this.props.route.params.luar_negeri
-        
+
         try {
             this.API_URL = await AsyncStorage.getItem('API_URL');
             if (this.API_URL !== null) {
-          
+
             }
             else {
                 await AsyncStorage.setItem('API_URL', this.api_url);
@@ -63,9 +64,9 @@ export default class LinksScreen extends React.Component {
         this.mylink2 = []
         let url = "";
         if (luar_negeri == true)
-            url = this.API_URL+ "c4omi/api-v3/links.php?luar_negeri=true&category_id=0"
+            url = this.API_URL + "c4omi/c4omi-api/links.php?luar_negeri=true&category_id=0"
         else
-            url = this.API_URL+ "c4omi/api-v3/links.php?category_id=" + category_id
+            url = this.API_URL + "c4omi/c4omi-api/links.php?category_id=" + category_id
         await fetch(url, {
             method: 'GET',
         })
@@ -98,7 +99,52 @@ export default class LinksScreen extends React.Component {
         if (luar_negeri == true) {
             this.subtitle = "Situs Luar Negeri"
         }
-        this.setState({ source: this.source })
+        this.links = []
+        for (let i = 0; i < this.data.length; i++) {
+            this.links.push(
+                <Layout key={Math.random()} style={{
+
+                    flexDirection: 'row',
+                    justifyContent: 'space-between'
+                }}>
+                    <Card
+                        style={{ flex: 1, margin: 3 }}
+                        header={(props) => (
+                            <View {...props}>
+                                <Text category='h6' >
+                                    {this.data[i].title}
+                                </Text>
+                                <Text category='s1'>
+                                    {this.data[i].category_name}
+                                </Text>
+                            </View>
+                        )
+                        }
+                        footer={(props) => (
+                            <View
+                                {...props}
+                                style={[props.style, styles.footerContainer]}
+                            >
+                                <Button size="small" onPress={() => {
+                                    Linking.openURL(this.data[i].url)
+                                }}
+                                    style={styles.footerControl}
+                                >
+                                    Buka
+                                </Button>
+                            </View>
+
+                        )}
+                    >
+                        <Text>
+                            {this.data[i].description}
+                        </Text>
+                    </Card>
+                </Layout>
+            )
+        }
+
+        this.setState({ source: this.source, links: this.links })
 
     }
 
@@ -201,16 +247,9 @@ export default class LinksScreen extends React.Component {
                     </Layout>
                 )}
 
-                <Layout style={{ flex: 1 }}>
-                    <List
-                        showsVerticalScrollIndicator={false}
-                        style={{ maxHeight: halfheight }}
-                        data={this.state.source}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={renderItem}
-                    />
-                    <View style={{ height: 10 }}></View>
-                </Layout>
+                <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} >
+                    {this.state.links}
+                </ScrollView>
             </Layout>
         );
     }
@@ -228,5 +267,11 @@ const styles = StyleSheet.create({
     icon: {
         width: 24,
         height: 24,
+    },
+    footerControl: {
+        marginHorizontal: 2,
+    },
+    footerContainer: {
+        flexDirection: 'row-reverse',
     },
 })

@@ -60,9 +60,9 @@ export default class PDFsScreen extends React.Component {
         this.mypdf2 = []
         let url = "";
         if (searchvalue == "")
-            url = this.API_URL + "c4omi/api-v3/pdfs.php"
+            url = this.API_URL + "c4omi/c4omi-api/pdfs.php"
         else
-            url = this.API_URL + "c4omi/api-v3/pdfs.php?keyword=" + searchvalue
+            url = this.API_URL + "c4omi/c4omi-api/pdfs.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -99,7 +99,7 @@ export default class PDFsScreen extends React.Component {
                     <View style={{ flex: 1, width: 210, height: 12 / 7 * 210 }}>
                         {this.data[j].thumbnail != "" && (
                             <Image style={styles.box1}
-                                source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
+                                source={{ uri: this.API_URL + "admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
                             />
                         )}
                         {this.data[j].thumbnail == "" && (
@@ -147,7 +147,7 @@ export default class PDFsScreen extends React.Component {
                                 }} >
                                     {this.data[j].thumbnail != "" && (
                                         <Image style={styles.box1}
-                                            source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
+                                            source={{ uri: this.API_URL + "admin/public/assets/uploads/files/thumbnail/" + this.data[j].thumbnail }}
                                         />
                                     )}
                                     {this.data[j].thumbnail == "" && (
@@ -199,9 +199,9 @@ export default class PDFsScreen extends React.Component {
         this.mybook2 = []
         let url = "";
         if (searchvalue == "")
-            url = this.API_URL + "c4omi/api-v3/ebooks.php"
+            url = this.API_URL + "c4omi/c4omi-api/ebooks.php"
         else
-            url = this.API_URL + "c4omi/api-v3/ebooks.php?keyword=" + searchvalue
+            url = this.API_URL + "c4omi/c4omi-api/ebooks.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -242,7 +242,7 @@ export default class PDFsScreen extends React.Component {
                         <View style={{ flex: 1, width: 210, height: 13 / 7 * 210 }}>
                             {this.data2[j].thumbnail != "" && (
                                 <Image style={styles.box1}
-                                    source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
+                                    source={{ uri: this.API_URL + "admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
                                 />
                             )}
                             {this.data2[j].thumbnail == "" && (
@@ -295,7 +295,7 @@ export default class PDFsScreen extends React.Component {
                                     }} >
                                         {this.data2[j].thumbnail != "" && (
                                             <Image style={styles.box1}
-                                                source={{ uri: this.API_URL + "c4omi-admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
+                                                source={{ uri: this.API_URL + "admin/public/assets/uploads/files/thumbnail/" + this.data2[j].thumbnail }}
                                             />
                                         )}
                                         {this.data2[j].thumbnail == "" && (
@@ -486,7 +486,7 @@ export default class PDFsScreen extends React.Component {
                         <View style={{ width: 2, height: 10 }}>
 
                         </View>
-                        <Text category="h5" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>Books Recommendation</Text>
+                        <Text category="h5" style={{ flex: 8, marginTop: 10, marginBottom: 3, paddingLeft: 5 }}>Book / Film Recommendation</Text>
                         {this.state.book}
                         <View style={{ width: 2, height: 30 }}>
 
@@ -544,20 +544,20 @@ export default class PDFsScreen extends React.Component {
                         }
                         if (index == 5) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("ChatClient")
+                            this.props.navigation.navigate("CopingSkill")
                         }
                         if (index == 6) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("AIKonselor")
+                            this.props.navigation.navigate("Charity")
                         }
                     }}>
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-open-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />            
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
                 </BottomNavigation>
             </Layout>

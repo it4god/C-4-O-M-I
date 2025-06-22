@@ -18,8 +18,8 @@ import {
 //import Sound from 'react-native-sound';
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
-import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class MobileDeveloperScreen extends React.Component {
+
+export default class DisclamerGKMScreen extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -28,19 +28,7 @@ export default class MobileDeveloperScreen extends React.Component {
         }
     }
     async componentDidMount() {
-        try {
-            this.API_URL = await AsyncStorage.getItem('API_URL');
-            if (this.API_URL !== null) {
 
-            }
-            else {
-                await AsyncStorage.setItem('API_URL', this.api_url);
-            }
-        } catch (e) {
-            // error reading value
-        }
-        this.photo = "jeffrey-lim-1fdc4.jpg"
-        this.setState({ refresh: true })
     }
 
 
@@ -50,10 +38,10 @@ export default class MobileDeveloperScreen extends React.Component {
                 <TopNavigation
                     alignment='center'
                     title='C4OMI Indonesia'
-                    subtitle='Pengembang Aplikasi'
+                    subtitle='Disclaimer'
                     accessoryLeft={(props) => (
                         <React.Fragment>
-                            <TouchableOpacity onPress={() => { this.props.navigation.navigate("DrawerMenu") }}>
+                            <TouchableOpacity onPress={() => { this.props.navigation.pop() }}>
                                 <Icon
                                     style={styles.icon}
                                     fill='#8F9BB3'
@@ -80,23 +68,26 @@ export default class MobileDeveloperScreen extends React.Component {
                                 source={require("../assets/c4omi.jpg")}
                             />
                         </View>
-                        <Text style={{ textAlign: "center", fontWeight: "bold" }}>
-                            Pengembang Aplikasi C4OMI
+                        <Text style={{ textAlign: "center", fontWeight: "bold", marginBottom: 20 }}>
+                            Love and Support 
                         </Text>
-
                         <Text style={{ textAlign: "justify" }}>
-                            {"\n"}
-                            Saya, Jeffrey Lim, pengembang Aplikasi Android C4OMI kelahiran Bandung 7 Juni 1980 ini mempunyai hobi membaca, menulis, merenung, mengajar, membuat website dan aplikasi mobile dan hal-hal seputar programming.
-                            Jeffrey kuliah Bachelor of Computing di Sydney,. Sesudah kuliah S1-nya di University of Technology Sydney (UTS), Jeffrey kembali ke Indonesia dan mengambil kuliah S2 Teologi.
-                            Jeffrey juga mempunyai usaha IT <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://limpingen.com') }}>Limpingen Soft Comp </Text> dan mengajar IT di <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://letscode.id') }}>Let's Code</Text> serta melayani di <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://seeingwithneweyes.id') }}>Pelayanan Seeing with New Eyes</Text> dan juga mendirikan IT Club di gereja yaitu <Text style={{ color: "#0000FF" }} onPress={() => { Linking.openURL('https://it4god.org') }}>IT4God Club</Text>.
-                            {"\n\n"}
-                            Soli Deo Gloria
+                            Pribadi-pribadi yang bergumul dengan gangguan kesehatan mental adalah ciptaan Tuhan yang berharga, mempunyai dignitas, dan makna hidup. Mereka mempunyai kelemahan namun mereka masih dapat tetap berkarya, menghasilkan dan menjadi berkat.{"\n\n"}Halaman ini adalah mengenai karya-karya dan jasa dari orang-orang dengan GKM yang ditawarkan kepada siapa saja yang mempunyai hati untuk mendukung. Setiap dukungan Anda dapat memberikan semangat hidup dan dorongan motivasi bagi orang-orang dengan GKM untuk terus produktif berkarya. Ini adalah satu aksi kasih kemanusiaan yang meninggikan kasih dan nilai-nilai kemanusiaan. 
                         </Text>
-                        {this.photo != undefined && (
-                                <Avatar style={{ textAlign: "center" }} size="giant" source={{ uri: this.API_URL + "admin/public/assets/uploads/files/memberphoto/" + this.photo }} />
-                            )}
-                        <Text>
-                        Jeffrey Lim, B.Comp, M.C.S</Text>
+                        <View style={{height:30}}>
+
+                        </View>
+                        <Text style={{ textAlign: "center", fontWeight: "bold", marginBottom: 20 }}>
+                            Disclaimer
+                        </Text>
+                        <Text style={{ textAlign: "justify" }}>
+                            Informasi yang ditampilkan dalam Aplikasi C4OMI disini bertujuan mempromosikan karya, produk dan/atau jasa dari individu dengan Gangguan Kesehatan Mental (GKM) sebagai bagian dari upaya pemberdayaan dan inklusi sosial. Semua hasil karya, produk dan jasa yang ditampilkan sepenuhnya merupakan hasil dari kemampuan dan kreativitas mereka. Kami berkomitmen untuk mendukung hak dan kesejahteraan mereka tanpa diskriminasi.
+                            {"\n\n"}
+                            Penayangan ini disediakan oleh C4OMI merupakan layanan non-profit, berperan sebagai penyedia sarana dan koneksi bagi pembeli atau pengguna yang ingin berinteraksi langsung dengan penyedia karya, produk, atau jasa. Segala bentuk transaksi, komunikasi, atau kesepakatan yang terjadi merupakan tanggung jawab penuh antara penyedia dan pembeli/pengguna. C4OMI melakukan seleksi berdasarkan kesepakatan koridor nilai dan integritas yang berlaku umum, C4OMI tidak bertanggung jawab atas kualitas, keberlanjutan, maupun hasil dari transaksi yang dilakukan.
+                        </Text>
+                        <Image style={{ marginTop: 0, width: width - 40, height: (width - 40) / 5 }}
+                            source={require('../assets/logo.png')}
+                        />
                     </Layout>
                 </ScrollView >
 

@@ -44,7 +44,7 @@ export default class EventScreen extends React.Component {
     } catch (e) {
       // error reading value
     }
-    url = this.API_URL + "c4omi/api-v3/event.php"
+    url = this.API_URL + "c4omi/c4omi-api/event.php"
 
     await fetch(url, {
       method: 'GET',
@@ -113,7 +113,7 @@ export default class EventScreen extends React.Component {
         <TopNavigation
           alignment='center'
           title='C4OMI Indonesia'
-          subtitle='Kegiatan'
+          subtitle='Kegiatan / Info'
           accessoryLeft={(props) => (
             <React.Fragment>
               <TouchableOpacity onPress={() => {
@@ -164,20 +164,20 @@ export default class EventScreen extends React.Component {
             }
             if (index == 5) {
               this.props.navigation.popToTop()
-              this.props.navigation.navigate("ChatClient")
-            }
-            if (index == 6) {
-              this.props.navigation.popToTop()
-              this.props.navigation.navigate("AIKonselor")
-            }
+              this.props.navigation.navigate("CopingSkill")
+          }
+          if (index == 6) {
+            this.props.navigation.popToTop()
+            this.props.navigation.navigate("Charity")
+        }
           }}>
           <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
           <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-open-outline'} />} />
           <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
           <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
           <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-          <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-          <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+          <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+          <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
         </BottomNavigation>
         <Modal visible={this.state.menuvisible}>

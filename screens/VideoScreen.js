@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Dimensions, TouchableOpacity, Share, Image, ScrollView } from "react-native";
+import { View, StyleSheet, Dimensions, TouchableOpacity, Share, Image, ScrollView, Alert} from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -20,6 +20,7 @@ import {
 } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImageView2 from "./ImageView2";
+import SQLite from 'react-native-sqlite-2'
 export default class VideoScreen extends React.Component {
 
 
@@ -28,7 +29,8 @@ export default class VideoScreen extends React.Component {
     this.state = {
       title: '',
       yt_id: '',
-      selectedIndex: 0
+      selectedIndex: 0,
+      bookmark: false
     }
   }
   reverseString(str) {
@@ -53,7 +55,7 @@ export default class VideoScreen extends React.Component {
     this.video_uri = "C4OMI-" + this.reverseString(this.yt_id) + "#Video"
     this.thumbnail = this.props.route.params.thumbnail
     console.log("Hei " + this.thumbnail)
-    this.related_url = this.API_URL + "c4omi/api-v3/related_video.php?video_id=" + this.id
+    this.related_url = this.API_URL + "c4omi/c4omi-api/related_video.php?video_id=" + this.id
 
     await fetch(this.related_url, {
       method: 'GET',
@@ -104,6 +106,112 @@ export default class VideoScreen extends React.Component {
     }
 
     this.setState({ title: this.title, yt_id: this.yt_id, video2: this.myvideo2 })
+    this.CheckTag()
+  }
+  async BookMark() {
+    Alert.alert("Bookmark Video", "BookMark for Video : " +  this.props.route.params.title)
+    let sql = "INSERT INTO video_tag (video_id, youtube_id, title, thumbnail, category_id, tag_value) VALUES (?, ?, ?, ?,?,?)"
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+
+    try {
+      db.transaction(
+        tx => {
+          tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS video_tag(' +
+            'id INTEGER PRIMARY KEY NOT NULL, ' +
+            'video_id TEXT, ' + 'youtube_id TEXT, ' + 'title TEXT, ' +  'thumbnail TEXT, ' +  'category_id TEXT, '+
+            'tag_value TEXT);',
+            [],
+            this.successCB,
+            this.errorStatementCB
+          )
+          tx.executeSql(sql, [this.id, this.yt_id,  this.props.route.params.title, this.thumbnail, this.category_id,   "true"]);
+          (tx, error) => {
+            console.log(error);
+          };
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+
+        }
+      );
+
+    }
+    catch (e) {
+      console.log(e);
+    }
+    this.CheckTag()
+  }
+  async RemoveBookMark() {
+    Alert.alert("Remove Bookmark Video", "Remove BookMark for Video : " +  this.props.route.params.title)
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+    db.transaction(tx => {
+        tx.executeSql('DELETE from video_tag WHERE video_id = ' + this.id, [], (tx, results) => {
+
+            this.setState({ messages: [] })
+        }
+        )
+    })
+    this.CheckTag()
+  }
+  async CheckTag() {
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS video_tag(' +
+        'id INTEGER PRIMARY KEY NOT NULL, ' +
+        'video_id TEXT, ' + 'youtube_id TEXT, ' + 'title TEXT, ' +  'thumbnail TEXT, ' +  'category_id TEXT, '+
+        'tag_value TEXT);',
+        [],
+        this.successCB,
+        this.errorStatementCB
+      )
+      tx.executeSql('SELECT * from video_tag WHERE video_id = ' + this.id + ' ORDER BY id ASC', [], (tx, results) => {
+        const rows = results.rows;
+        if (rows.length > 0) {
+          console.log(rows.item(0).tag_value)
+          if (rows.item(0).tag_value == "true") {
+            this.setState({ bookmark: true })
+          }
+          else {
+            this.setState({ bookmark: false })
+          }
+        }
+        else {
+          this.setState({ bookmark: false })
+        }
+      }
+      )
+    }
+    )
+  }
+
+  errorCB = (err) => {
+    console.error('error:', err)
+    this.addLog('Error: ' + (err.message || err))
+  }
+
+  errorStatementCB = (_tx, err) => {
+    this.errorCB(err)
+    return false
+  }
+  successCB = () => {
+    console.log('SQL executed ...')
+  }
+
+  openCB = () => {
+    this.addLog('Database OPEN')
+    this.setState(this.state)
+  }
+
+  closeCB = () => {
+    this.addLog('Database CLOSED')
+  }
+
+  deleteCB = () => {
+    this.addLog('Database DELETED')
   }
   async Share() {
     try {
@@ -149,6 +257,29 @@ export default class VideoScreen extends React.Component {
           )}
           accessoryRight={(props) => (
             <React.Fragment>
+              {this.state.bookmark == false && (
+                <TouchableOpacity onPress={() => {
+                  this.BookMark()
+                }}>
+                  <Icon
+                    style={styles.icon}
+                    fill='#8F9BB3'
+                    name='bookmark-outline'
+                  />
+                </TouchableOpacity>
+              )}
+              {this.state.bookmark == true && (
+                <TouchableOpacity onPress={() => {
+                  this.RemoveBookMark()
+                }}>
+                  <Icon
+                    style={styles.icon}
+                    fill='#8F9BB3'
+                    name='bookmark'
+                  />
+                </TouchableOpacity>
+              )}
+              <View style={{ width: 5 }}></View>
               <TouchableOpacity onPress={() => {
                 this.Share();
               }}>

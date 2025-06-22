@@ -55,7 +55,7 @@ export default class BundleScreen extends React.Component {
     console.log(this.url);
     this.uri = "http://c4omi.org/article.php?article_title=" + this.props.route.params.title.replaceAll(" ", "%20")
 
-    this.related_url = this.API_URL+ "c4omi/api-v3/related_article.php?article_id=" + this.id
+    this.related_url = this.API_URL+ "c4omi/c4omi-api/related_article.php?article_id=" + this.id
     console.log
     await fetch(this.related_url, {
       method: 'GET',
@@ -147,7 +147,7 @@ export default class BundleScreen extends React.Component {
     }
     this.url = this.API_URL+ "c4omi/articles/" + url;
     this.uri = "http://c4omi.org/article.php?article_title=" + title.replaceAll(" ", "%20")
-    this.related_url = this.API_URL+ "c4omi/api-v3/related_article.php?article_id=" + this.id
+    this.related_url = this.API_URL+ "c4omi/c4omi-api/related_article.php?article_id=" + this.id
    this.setState({ article2: this.myarticle2, page: 2, title: this.title, url: this.url })
 
 

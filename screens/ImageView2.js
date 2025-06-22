@@ -136,7 +136,10 @@ const Images={
     'ZQHlZ9cFEAs':require('../assets/video/ZQHlZ9cFEAs-MQ.jpg'),
     'ZqIlYnokzw0':require('../assets/video/ZqIlYnokzw0-MQ.jpg'),
     'ZU-tBoQdnuU':require('../assets/video/ZU-tBoQdnuU-MQ.jpg'),
-    '_Mq6raknPsY':require('../assets/video/_Mq6raknPsY-MQ.jpg')
+    '_Mq6raknPsY':require('../assets/video/_Mq6raknPsY-MQ.jpg'),
+    'h5SwUhAq7dk':require('../assets/video/h5SwUhAq7dk-MQ.jpg'),
+    'CUwLs5LpvY0':require('../assets/video/CUwLs5LpvY0-MQ.jpg')
+
     }
     
     

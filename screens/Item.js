@@ -19,7 +19,7 @@ import {
 } from '@ui-kitten/components';
 import Pdf from 'react-native-pdf';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-export default class BookScreen extends React.Component {
+export default class ItemScreen extends React.Component {
 
 
   constructor(props) {
@@ -42,28 +42,34 @@ export default class BookScreen extends React.Component {
     } catch (e) {
       // error reading value
     }
-    this.id = this.props.route.params.id;
-    let url = this.API_URL + "c4omi/c4omi-api/ebooks.php?id=" + this.id
+    this.id = this.props.route.params.item_id;
+    let url = this.API_URL + "c4omi/c4omi-api/items.php?item_id=" + this.id
     await fetch(url, {
       method: 'GET',
     })
       .then(response => response.json())
       .then((responseJson) => {
         this.data = responseJson
+
         this.description = this.data[0].description
-        console.log(this.description)
+        this.thumbnail = this.data[0].thumbnail
+        this.fullname = this.data[0].fullname
+        this.price = this.data[0].price
+        this.item_name = this.data[0].item_name
+        this.about = this.data[0].about
+        this.phone_number = this.data[0].phone_number
+        this.photo = this.data[0].photo
+        this.url = this.data[0].item_url
+        this.category_name = this.capitalizeFirstLetter(this.data[0].category)
       });
 
 
-    this.url = this.props.route.params.url
-    this.thumbnail = this.props.route.params.thumbnail
-    this.author = this.props.route.params.author
-    this.category_name = this.props.route.params.category_name
-    this.title = this.props.route.params.title.substring(0, 40)
-    console.log(this.thumbnail)
+
     this.setState({ url: "refresh" })
   }
-
+  capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
   render() {
     const source = { uri: this.url };
@@ -72,7 +78,7 @@ export default class BookScreen extends React.Component {
         <TopNavigation
           alignment='center'
           title={this.category_name}
-          subtitle={this.title}
+          subtitle={this.item_name}
           accessoryLeft={(props) => (
             <React.Fragment>
               <TouchableOpacity onPress={() => {
@@ -90,7 +96,8 @@ export default class BookScreen extends React.Component {
           accessoryRight={(props) => (
             <React.Fragment>
               <TouchableOpacity onPress={() => {
-                Linking.openURL(this.url);
+                if (this.url != undefined)
+                  Linking.openURL(this.url);
               }}>
                 <Icon
                   style={styles.icon}
@@ -105,33 +112,55 @@ export default class BookScreen extends React.Component {
         <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1 }}>
             {this.state.url != "" && (
-              <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
                 {this.thumbnail != "" && (
-                  <Image style={styles.box1}
-                    source={{ uri: this.API_URL + "admin/public/assets/uploads/files/thumbnail/" + this.thumbnail }}
+                  <Image resizeMode="stretch" style={styles.box1}
+                    source={{ uri: this.API_URL + "admin/public/assets/uploads/files/itemphoto/" + this.thumbnail }}
                   />
                 )}
                 {this.thumbnail == "" && (
-                  <Image style={styles.box1}
+                  <Image resizeMode="stretch" style={styles.box1}
                     source={require('../assets/C4OMI-Logo.png')}
                   />
                 )}
-              </View>)}
+                <Text style={{ flex: 5, paddingLeft: 10, }} category="h6" >{this.item_name}</Text>
+                <Text style={{ flex: 5, paddingLeft: 10, }} category="p2">{this.fullname}</Text>
+                <Text style={{ flex: 5, paddingLeft: 10, fontWeight: "bold" }} category="p2">{this.price}</Text>
 
-            <Text category="p1" style={{ flex: 1, textAlign: "justify", paddingHorizontal: 10 }}>
+              </View>)}
+            <Text category="p1" style={{ flex: 1, textAlign: "justify", paddingHorizontal: 10, marginVertical: 15 }}>
               {this.description}
             </Text>
-            <View style={{paddingVertical:7}}>
+            <Divider />
+            <View style={{ justifyContent: "center", alignItems: "center", paddingTop: 10 }}>
+              {this.photo != undefined && (
+                <Avatar size="giant" source={{ uri: this.API_URL + "admin/public/assets/uploads/files/memberphoto/" + this.photo }} />
+              )}
+              <Text category="h6" >Tentang {this.fullname}</Text>
+            </View>
+            <Text category="p1" style={{ flex: 1, textAlign: "justify", paddingHorizontal: 10 }}>
+              {this.about}
+            </Text>
+            <View style={{ paddingVertical: 7 }}>
               <Button size="large" onPress={() => {
-                Linking.openURL(this.url)
+                Linking.openURL('https://wa.me/62' + this.phone_number.substring(1))
               }}
                 style={{ marginHorizontal: 20 }}
               >
-                {"Buka Link"}
+                {"Hubungi " + this.fullname}
               </Button>
 
             </View>
-
+            {this.url !=undefined &&(
+            <View style={{ paddingVertical: 7 }}>
+              <Button size="large" onPress={() => {
+                  Linking.openURL(this.url);
+              }}
+                style={{ marginHorizontal: 20 }}
+              >
+                {"Website"}
+              </Button>
+            </View>)}
           </View>
           <View style={{ height: 25 }}></View>
         </ScrollView>
@@ -151,7 +180,7 @@ const styles = StyleSheet.create({
     height: 24,
   },
   box1: {
-    marginRight: 5, width: 200, height: 11 / 7 * 200, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
+     width: windowWidth, height: windowWidth, borderRadius: 5, borderWidth: 1, borderColor: '#e4e9f2'
   },
   boxmore: {
     marginTop: 20,

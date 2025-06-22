@@ -57,9 +57,9 @@ export default class ArticlesScreen extends React.Component {
         this.myarticledetail = []
         this.myarticle2 = []
         if (searchvalue == "")
-            url = this.API_URL + "c4omi/api-v3/articles.php"
+            url = this.API_URL + "c4omi/c4omi-api/articles.php"
         else
-            url = this.API_URL + "c4omi/api-v3/articles.php?keyword=" + searchvalue
+            url = this.API_URL + "c4omi/c4omi-api/articles.php?keyword=" + searchvalue
         await fetch(url, {
             method: 'GET',
         })
@@ -93,7 +93,7 @@ export default class ArticlesScreen extends React.Component {
                                 id: this.data[j].id,
                                 category_id: this.data[j].category_id,
                                 url: this.data[j].url,
-                                bundle_id : this.data[j].bundle_id
+                                bundle_id: this.data[j].bundle_id
                             })
 
                         }} >
@@ -155,7 +155,7 @@ export default class ArticlesScreen extends React.Component {
             }
 
 
-            this.shuffle(this.myarticledetail)
+            this.myarticledetail = this.shuffle(this.myarticledetail)
             this.myarticledetail.push(
                 <TouchableOpacity key={"More-article" + Math.random()} onPress={() => {
                     this.myarticle2 = []
@@ -168,7 +168,7 @@ export default class ArticlesScreen extends React.Component {
                                         id: this.data[j].id,
                                         category_id: this.data[j].category_id,
                                         url: this.data[j].url,
-                                        bundle_id : this.data[j].bundle_id
+                                        bundle_id: this.data[j].bundle_id
 
                                     })
                                 }} >
@@ -249,7 +249,7 @@ export default class ArticlesScreen extends React.Component {
                                                 id: this.data[j].id,
                                                 category_id: this.data[j].category_id,
                                                 url: this.data[j].url,
-                                                bundle_id : this.data[j].bundle_id
+                                                bundle_id: this.data[j].bundle_id
 
                                             })
                                         }} >
@@ -310,7 +310,7 @@ export default class ArticlesScreen extends React.Component {
 
                             this.setState({ article2: this.myarticle2, page: 2, category: category[i], category_name: category_name[i] })
                         }}>
-                           <Text style={{ flex: 2, color: "#007b7f", fontWeight:"400", marginTop: 14, marginRight:3 }}>More</Text>
+                            <Text style={{ flex: 2, color: "#007b7f", fontWeight: "400", marginTop: 14, marginRight: 3 }}>More</Text>
                         </TouchableOpacity>
                     </View>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
@@ -318,7 +318,7 @@ export default class ArticlesScreen extends React.Component {
                     </ScrollView>
                 </View>
             )
-            this.shuffle(this.myarticle)
+            this.myarticle = this.shuffle(this.myarticle)
 
         }
         this.setState({ article: this.myarticle })
@@ -328,24 +328,21 @@ export default class ArticlesScreen extends React.Component {
     }
 
     shuffle(array) {
-        let currentIndex = array.length;
-
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
-
-            // Pick a remaining element...
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            // And swap it with the current element.
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
+        let oldElement;
+        for (let i = array.length - 1; i > 0; i--) {
+            let rand = Math.floor(Math.random() * (i + 1));
+            oldElement = array[i];
+            array[i] = array[rand];
+            array[rand] = oldElement;
         }
+        return array;
     }
     DoSearch() {
         this.DoGenerateArticle(this.state.searchvalue)
     }
-
+    SavedArticles(){
+        this.props.navigation.navigate("SavedArticle")
+    }
     render() {
         const toggleSearch = () => {
             this.DoSearch()
@@ -356,7 +353,7 @@ export default class ArticlesScreen extends React.Component {
                     <TopNavigation
                         alignment='center'
                         title='C4OMI Indonesia'
-                        subtitle='Artikel-artikel'
+                        subtitle='Articles'
                         accessoryLeft={(props) => (
                             <React.Fragment>
                                 <TouchableOpacity onPress={() => {
@@ -373,6 +370,16 @@ export default class ArticlesScreen extends React.Component {
                         )}
                         accessoryRight={(props) => (
                             <React.Fragment>
+                                <TouchableOpacity onPress={() => {
+                                    this.SavedArticles()
+                                }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='archive-outline'
+                                    />
+                                </TouchableOpacity>
+                                <View style={{ width: 5 }}></View>
                                 <TouchableOpacity onPress={() => { this.setState({ search: true }) }}>
                                     <Icon
                                         style={styles.icon}
@@ -468,11 +475,11 @@ export default class ArticlesScreen extends React.Component {
                         }
                         if (index == 5) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("ChatClient")
+                            this.props.navigation.navigate("CopingSkill")
                         }
                         if (index == 6) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("AIKonselor")
+                            this.props.navigation.navigate("Charity")
                         }
                     }}>
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
@@ -480,8 +487,8 @@ export default class ArticlesScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
                 </BottomNavigation>
             </Layout>

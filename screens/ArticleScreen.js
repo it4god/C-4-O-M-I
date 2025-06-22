@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Dimensions, TouchableOpacity, Share, Image, ScrollView } from "react-native";
+import { View, StyleSheet, Dimensions, TouchableOpacity, Share, Image, ScrollView, Alert } from "react-native";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -19,6 +19,7 @@ import {
 } from '@ui-kitten/components';
 import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import SQLite from 'react-native-sqlite-2'
 export default class ArticleScreen extends React.Component {
 
 
@@ -27,7 +28,8 @@ export default class ArticleScreen extends React.Component {
     this.state = {
       title: '',
       yt_id: '',
-      selectedIndex: 0
+      selectedIndex: 0,
+      bookmark : false
     }
   }
 
@@ -54,7 +56,7 @@ export default class ArticleScreen extends React.Component {
     this.url = this.API_URL + "c4omi/articles/" + this.props.route.params.url;
     this.uri = "http://c4omi.org/article.php?article_title=" + this.props.route.params.title.replaceAll(" ", "%20")
 
-    this.related_url = this.API_URL + "c4omi/api-v3/related_article.php?article_id=" + this.id
+    this.related_url = this.API_URL + "c4omi/c4omi-api/related_article.php?article_id=" + this.id
     await fetch(this.related_url, {
       method: 'GET',
     })
@@ -133,7 +135,7 @@ export default class ArticleScreen extends React.Component {
     }
 
     this.setState({ article2: this.myarticle2, page: 2, title: this.title, url: this.url })
-
+    this.CheckTag()
 
 
   }
@@ -146,12 +148,117 @@ export default class ArticleScreen extends React.Component {
     }
     this.url = this.API_URL + "c4omi/articles/" + url;
     this.uri = "http://c4omi.org/article.php?article_title=" + title.replaceAll(" ", "%20")
-    this.related_url = this.API_URL + "c4omi/api-v3/related_article.php?article_id=" + this.id
+    this.related_url = this.API_URL + "c4omi/c4omi-api/related_article.php?article_id=" + this.id
     this.setState({ article2: this.myarticle2, page: 2, title: this.title, url: this.url })
 
+    this.CheckTag()
 
 
+  }
+  async BookMark() {
+    Alert.alert("Bookmark Article", "BookMark for article : " + this.props.route.params.title)
+    let sql = "INSERT INTO article_tag (article_id, title, bundle_id, category_id, url, tag_value) VALUES (?,?,?,?,?,?)"
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
 
+    try {
+      db.transaction(
+        tx => {
+          tx.executeSql(
+            'CREATE TABLE IF NOT EXISTS article_tag(' +
+            'id INTEGER PRIMARY KEY NOT NULL, ' +
+            'article_id TEXT, ' + 'title TEXT, ' +  'bundle_id TEXT, ' +  'category_id TEXT, ' +  'url TEXT, ' +
+            'tag_value TEXT);',
+            [],
+            this.successCB,
+            this.errorStatementCB
+          )
+          tx.executeSql(sql, [this.id, this.props.route.params.title, this.bundle_id, this.category_id, this.props.route.params.url,  "true"]);
+          (tx, error) => {
+            console.log(error);
+          };
+        },
+        error => {
+          console.log(error);
+        },
+        () => {
+
+        }
+      );
+
+    }
+    catch (e) {
+      console.log(e);
+    }
+    this.CheckTag()
+  }
+  async RemoveBookMark() {
+    Alert.alert("Remove Bookmark Article", "Remove BookMark for article : " +  this.props.route.params.title)
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+    db.transaction(tx => {
+        tx.executeSql('DELETE from article_tag WHERE article_id = ' + this.id, [], (tx, results) => {
+
+            this.setState({ messages: [] })
+        }
+        )
+    })
+    this.CheckTag()
+  }
+  async CheckTag() {
+    const db = SQLite.openDatabase('tag.db', '1.0', '', 1)
+    db.transaction(tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS article_tag(' +
+        'id INTEGER PRIMARY KEY NOT NULL, ' +
+        'article_id TEXT, ' + 'title TEXT, ' +  'bundle_id TEXT, ' +  'category_id TEXT, ' +  'url TEXT, ' +
+        'tag_value TEXT);',
+        [],
+        this.successCB,
+        this.errorStatementCB
+      )
+      tx.executeSql('SELECT * from article_tag WHERE article_id = ' + this.id + ' ORDER BY id ASC', [], (tx, results) => {
+        const rows = results.rows;
+        if (rows.length > 0) {
+          console.log(rows.item(0).tag_value)
+          if (rows.item(0).tag_value == "true") {
+            this.setState({ bookmark: true })
+          }
+          else {
+            this.setState({ bookmark: false })
+          }
+        }
+        else {
+          this.setState({ bookmark: false })
+        }
+      }
+      )
+    }
+    )
+  }
+  
+  errorCB = (err) => {
+    console.error('error:', err)
+    this.addLog('Error: ' + (err.message || err))
+  }
+
+  errorStatementCB = (_tx, err) => {
+    this.errorCB(err)
+    return false
+  }
+  successCB = () => {
+    console.log('SQL executed ...')
+  }
+
+  openCB = () => {
+    this.addLog('Database OPEN')
+    this.setState(this.state)
+  }
+
+  closeCB = () => {
+    this.addLog('Database CLOSED')
+  }
+
+  deleteCB = () => {
+    this.addLog('Database DELETED')
   }
   async Share() {
 
@@ -182,7 +289,7 @@ export default class ArticleScreen extends React.Component {
       <Layout style={{ flex: 1 }}>
         <TopNavigation
           alignment='center'
-          title='Artikel'
+          title='Article'
           subtitle={this.title}
           accessoryLeft={(props) => (
             <React.Fragment>
@@ -200,6 +307,29 @@ export default class ArticleScreen extends React.Component {
           )}
           accessoryRight={(props) => (
             <React.Fragment>
+              {this.state.bookmark == false && (
+                <TouchableOpacity onPress={() => {
+                  this.BookMark()
+                }}>
+                  <Icon
+                    style={styles.icon}
+                    fill='#8F9BB3'
+                    name='bookmark-outline'
+                  />
+                </TouchableOpacity>
+              )}
+              {this.state.bookmark == true && (
+                <TouchableOpacity onPress={() => {
+                  this.RemoveBookMark()
+                }}>
+                  <Icon
+                    style={styles.icon}
+                    fill='#8F9BB3'
+                    name='bookmark'
+                  />
+                </TouchableOpacity>
+              )}
+              <View style={{ width: 5 }}></View>
               <TouchableOpacity onPress={() => {
                 this.Share();
               }}>

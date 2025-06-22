@@ -54,7 +54,8 @@ export default class ChatClientScreen extends React.Component {
       // error reading value
   }
     this.id = Math.random()
-    this.socket = io(this.API_URL.slice(0, this.API_URL.length-1) + ":3000");
+    this.socket = io("http://13.55.218.192:3000")
+    //this.socket = io(this.API_URL.slice(0, this.API_URL.length-1) + ":3000");
     this.socket.on("chat", msg => {
       console.log(msg)
       this.setState(previousState => ({

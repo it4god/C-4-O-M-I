@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import ImageView from "./ImageView";
 import ImageView2 from "./ImageView2";
+import SQLite from 'react-native-sqlite-2'
 export default class VideosScreen extends React.Component {
 
     constructor(props) {
@@ -76,20 +77,19 @@ export default class VideosScreen extends React.Component {
             }
 
         }
-        else
-        {
+        else {
             if (searchvalue == "")
-                url = this.API_URL + "c4omi/api-v3/videos.php"
+                url = this.API_URL + "c4omi/c4omi-api/videos.php"
             else
-                url = this.API_URL + "c4omi/api-v3/videos.php?keyword=" + searchvalue
-    
+                url = this.API_URL + "c4omi/c4omi-api/videos.php?keyword=" + searchvalue
+
             await fetch(url, {
                 method: 'GET',
             })
                 .then(response => response.json())
                 .then((responseJson) => {
                     this.data = responseJson
-    
+
                 });
         }
         let n = 0
@@ -102,6 +102,8 @@ export default class VideosScreen extends React.Component {
             }
 
         }
+
+
         for (let i = 0; i < category.length; i++) {
             this.myvideodetail = []
             n = 0
@@ -129,7 +131,7 @@ export default class VideosScreen extends React.Component {
                                 )}
                                 {this.data[j].thumbnail != "app" && (
                                     <Image style={styles.box1}
-                                        source={require('../assets/C4OMI-Logo.png')}
+                                        source={{ uri: "https://nepho.id/c4omi/video_img/" + this.data[j].youtube_id + "-MQ.jpg" }}
                                     />
                                 )}
                                 {this.data[j].title.length > 25 && (
@@ -154,7 +156,7 @@ export default class VideosScreen extends React.Component {
             }
 
 
-            this.shuffle(this.myvideodetail)
+            this.myvideodetail = this.shuffle(this.myvideodetail)
             this.myvideodetail.push(
                 <TouchableOpacity key={"More-Video" + i.toString()} onPress={() => {
                     this.myvideo2 = []
@@ -178,7 +180,7 @@ export default class VideosScreen extends React.Component {
                                     )}
                                     {this.data[j].thumbnail != "app" && (
                                         <Image style={styles.box1}
-                                            source={require('../assets/C4OMI-Logo.png')}
+                                            source={{ uri: "https://nepho.id/c4omi/video_img/" + this.data[j].youtube_id + "-MQ.jpg" }}
                                         />
                                     )}
                                     <View style={{ width: 300, flexShrink: 1 }}>
@@ -234,7 +236,7 @@ export default class VideosScreen extends React.Component {
                                             )}
                                             {this.data[j].thumbnail != "app" && (
                                                 <Image style={styles.box1}
-                                                    source={require('../assets/C4OMI-Logo.png')}
+                                                    source={{ uri: "https://nepho.id/c4omi/video_img/" + this.data[j].youtube_id + "-MQ.jpg" }}
                                                 />
                                             )}
                                             <View style={{ width: 300, flexShrink: 1 }}>
@@ -259,7 +261,7 @@ export default class VideosScreen extends React.Component {
 
                             this.setState({ video2: this.myvideo2, page: 2, category: category[i], category_name: category_name[i] })
                         }}>
-                            <Text style={{ flex: 2, color: "#007b7f", fontWeight:"400", marginTop: 14, marginRight:3 }}>More</Text>
+                            <Text style={{ flex: 2, color: "#007b7f", fontWeight: "400", marginTop: 14, marginRight: 3 }}>More</Text>
                         </TouchableOpacity>
                     </View>
                     <ScrollView showsHorizontalScrollIndicator={false} horizontal={true} style={{ paddingLeft: 5, paddingRight: 5, marginVertical: 8 }}>
@@ -267,33 +269,28 @@ export default class VideosScreen extends React.Component {
                     </ScrollView>
                 </View>
             )
-            this.shuffle(this.myvideo)
+            this.myvideo = this.shuffle(this.myvideo)
 
         }
         this.setState({ video: this.myvideo })
 
     }
-
     shuffle(array) {
-        let currentIndex = array.length;
-
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
-
-            // Pick a remaining element...
-            let randomIndex = Math.floor(Math.random() * currentIndex);
-            currentIndex--;
-
-            // And swap it with the current element.
-            [array[currentIndex], array[randomIndex]] = [
-                array[randomIndex], array[currentIndex]];
+        let oldElement;
+        for (let i = array.length - 1; i > 0; i--) {
+            let rand = Math.floor(Math.random() * (i + 1));
+            oldElement = array[i];
+            array[i] = array[rand];
+            array[rand] = oldElement;
         }
+        return array;
     }
-
     DoSearch() {
         this.DoGenerateVideo(this.state.searchvalue)
     }
-
+    SavedVideo(){
+        this.props.navigation.navigate("SavedVideo")
+    }
     render() {
         const toggleSearch = () => {
             this.DoSearch()
@@ -322,6 +319,16 @@ export default class VideosScreen extends React.Component {
                         )}
                         accessoryRight={(props) => (
                             <React.Fragment>
+                                <TouchableOpacity onPress={() => {
+                                    this.SavedVideo()
+                                }}>
+                                    <Icon
+                                        style={styles.icon}
+                                        fill='#8F9BB3'
+                                        name='archive-outline'
+                                    />
+                                </TouchableOpacity>
+                                <View style={{ width: 5 }}></View>
                                 <TouchableOpacity onPress={() => {
                                     this.setState({ search: true })
                                 }}>
@@ -418,11 +425,10 @@ export default class VideosScreen extends React.Component {
                         }
                         if (index == 5) {
                             this.props.navigation.popToTop()
-                            this.props.navigation.navigate("ChatClient")
+                            this.props.navigation.navigate("CopingSkill")
                         }
                         if (index == 6) {
-                            this.props.navigation.popToTop()
-                            this.props.navigation.navigate("AIKonselor")
+                            this.props.navigation.navigate("Charity")
                         }
                     }}>
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'video-outline'} />} />
@@ -430,8 +436,8 @@ export default class VideosScreen extends React.Component {
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'book-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'calendar-outline'} />} />
                     <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'link-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-circle-outline'} />} />
-                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'message-square-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'bulb-outline'} />} />
+                    <BottomNavigationTab title={""} icon={(props) => <Icon fill='#8F9BB3' {...props} name={'gift-outline'} />} />
 
                 </BottomNavigation>
             </Layout>
