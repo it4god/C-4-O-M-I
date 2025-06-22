@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import HomeScreen from "./screens/HomeScreen";
 import VideoScreen from "./screens/VideoScreen";
 import VideosScreen from "./screens/VideosScreen";
@@ -27,14 +28,41 @@ import BundlesScreen from "./screens/BundlesScreen";
 import BundleScreen from "./screens/BundleScreen";
 import DisclamerScreen from "./screens/DisclaimerScreen";
 import BookScreen from "./screens/BookScreen";
+import CharityScreen from "./screens/CharityScreen";
+import ItemScreen from "./screens/Item";
+import DisclamerGKMScreen from "./screens/DisclaimerGKMScreen";
+import CopingSkillScreen from "./screens/CopingSkillScreen";
+import JournalingsScreen from "./screens/JournalingsScreen";
+import PlayRecordedVideoScreen from "./screens/PlayRecordedVideoScreen";
+import Journaling from "./screens/Journaling";
+import StressLevelScreen from "./screens/StressLevelScreen";
+import ChangePerspectiveScreen from "./screens/ChangePerspectiveScreen";
+import MusicTherapyScreen from "./screens/MusicTherapyScreen";
 const Stack = createNativeStackNavigator();
 import * as eva from '@eva-design/eva';
+import SQLite from 'react-native-sqlite-storage';
+import TrackPlayer from 'react-native-track-player';
+import SavedVideoScreen from "./screens/SavedVideoScreen";
+import SavedArticlesScreen from "./screens/SavedArticleScreen";
+import MoodTrackerScreen from "./screens/MoodTrackerScreen";
+global.MyTrackPlayer = TrackPlayer;
+global.db = SQLite.openDatabase(
+  {
+    name: 'c4omi.db',
+    createFromLocation: 1,
+  },
+  () => { },
+  error => {
+    console.log("ERROR: " + error);
+  }
+);
 export default class App extends React.Component {
 
 
   constructor(props) {
     super(props)
 
+    global.MyTrackPlayer.setupPlayer()
   }
 
   componentDidMount() {
@@ -44,7 +72,7 @@ export default class App extends React.Component {
 
   render() {
     return (
-      <>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <IconRegistry icons={EvaIconsPack} />
         <ApplicationProvider {...eva} theme={eva.light}>
           <NavigationContainer>
@@ -95,10 +123,36 @@ export default class App extends React.Component {
                 options={{ headerShown: false, animation: 'none' }} />
               <Stack.Screen name="Book" component={BookScreen}
                 options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Charity" component={CharityScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Item" component={ItemScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="DisclaimerGKM" component={DisclamerGKMScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="CopingSkill" component={CopingSkillScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Journalings" component={JournalingsScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="Journaling" component={Journaling}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="PlayRecordedVideo" component={PlayRecordedVideoScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="StressLevel" component={StressLevelScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="ChangePerspective" component={ChangePerspectiveScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="MusicTherapy" component={MusicTherapyScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="SavedVideo" component={SavedVideoScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="SavedArticle" component={SavedArticlesScreen}
+                options={{ headerShown: false, animation: 'none' }} />
+              <Stack.Screen name="MoodTracker" component={MoodTrackerScreen}
+                options={{ headerShown: false, animation: 'none' }} />
             </Stack.Navigator>
           </NavigationContainer>
         </ApplicationProvider>
-      </>
+      </GestureHandlerRootView>
     );
   }
 }
